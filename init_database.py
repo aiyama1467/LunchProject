@@ -13,8 +13,8 @@ genres = ['和食', '洋食', '肉', '魚', '野菜', 'フルーツ',
           'デザート', '麺', '丼', '主菜', '副菜', 'ごはん', '汁物']
 
 
-c.executemany('INSERT INTO accounts_allergies VALUES (?, ?)', enumerate(allergies))
-c.executemany('INSERT INTO accounts_genres VALUES (?, ?)', enumerate(genres))
+c.executemany('INSERT INTO menu_proposal_allergies VALUES (?, ?)', enumerate(allergies))
+c.executemany('INSERT INTO menu_proposal_genres VALUES (?, ?)', enumerate(genres))
 
 
 connection.commit()
