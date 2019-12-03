@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>検索条件</h1>
+<form method="post">
+    {% csrf_token %}
+    {% for field in test_form %}
+    <label>{{field.label}}:</label>
+    {{field}}
+    {% endfor %}
+    <input type="submit" id="button" name="button" value="検索">
+</form>
+<h1>検索結果</h1>
+{% for menu in menu_list %}
+
+<a href={% url 'detail' pk=menu.id %}>{{menu.menu_name}}</a>
+{% if user.is_superuser %}
+<a class="btn btn-primary" href="{% url 'update' menu.pk %}">修正</a>
+<a class="btn btn-danger" href="{% url 'delete' menu.pk %}">削除</a>
+{% endif %}
+<br>
+{% endfor %}
+<!--ページ送り-->
+{% if page_obj.has_previous %}
+<a href="?page={{ page_obj.previous_page_number }}">前へ</a>
+{% endif %}
+
+{% for num in page_obj.paginator.page_range %}
+{% if page_obj.number == num %}
+<span>{{ num }}</span>
+{% else %}
+<a href="?page={{ num }}">{{ num }}</a>
+{% endif %}
+{% endfor %}
+
+{% if page_obj.has_next %}
+<a href="?page={{ page_obj.next_page_number }}">次へ</a>
+{% endif %}
+{% endblock content %}

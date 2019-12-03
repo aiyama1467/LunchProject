@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<a href={% url 'list' %}>一覧に戻る</a>
+<p>{{menu.menu_name}}</p>
+<p>価格：{{menu.menu_value}}</p>
+<p>三群栄養素：赤{{menu.menu_red_point}} 緑{{menu.menu_green_point}} 黄{{menu.menu_yellow_point}}</p>
+<p>カロリー：{{menu.menu_lipid}}</p>
+<p>脂質：{{menu.menu_lipid}}</p>
+<p>塩分：{{menu.menu_salt_content}}</p>
+<p>炭水化物：{{menu.menu_carbohydrate}}</p>
+<p>タンパク質：{{menu.menu_protein}}</p>
+<p>ジャンル：
+    {% for genre in menu.menu_genre.all %}
+    {{genre.genre_name}}
+    {% endfor %}
+</p>
+
+<p>アレルギー：
+    {% for Allergies in menu.menu_allergies.all %}
+    {{Allergies.allergy_name}}
+    {% endfor %}
+</p>
+{% if menu.menu_picture %}
+<p>画像：<br><img src="{{ menu.menu_picture.url }}" width="50%" height="50%" /></p>
+{% endif %}
+{% endblock content %}
