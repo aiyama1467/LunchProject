@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
+指定した内容<br>
 {% for field in form %}
 <div>
     <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
     {{ field.value }}
 </div>
 {% endfor %}
-{% for list in menu %}
-{% for name in list %}
+<br>
+おすすめメニュー<br>
+{% for name in menu %}
 {{name.menu_name}}<br>
 {% endfor %}
 <br>
+{% for key, value in sum.items %}
+{{key}}:{{value|floatformat:-2}}<br>
 {% endfor %}
-{% for i in sum.sum %}
-{{i}}<br>
-{% endfor %}
-赤{{sum.red}}
 <input type="button" value="戻る" onClick="javascript:history.go(-1);">
 <hr>
 {% endblock %}
