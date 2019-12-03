@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<a href={% url 'list' %}>一覧に戻る</a>
+<a href={% url 'menu_proposal:list' %}>一覧に戻る</a>
 <p>{{menu.menu_name}}</p>
 <p>価格：{{menu.menu_value}}</p>
 <p>三群栄養素：赤{{menu.menu_red_point}} 緑{{menu.menu_green_point}} 黄{{menu.menu_yellow_point}}</p>

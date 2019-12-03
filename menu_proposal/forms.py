@@ -19,6 +19,6 @@ class ProposalForm(forms.Form):
         label="食事回数", choices=TIME_CHOICE, widget=forms.RadioSelect)
     budget = forms.IntegerField(label="予算", min_value=300, max_value=7000)
     allergy = forms.ModelMultipleChoiceField(label="アレルギー",
-                                             queryset=Allergies.objects.all(), widget=forms.CheckboxSelectMultiple)
+                                             queryset=Allergies.objects.all(), widget=forms.CheckboxSelectMultiple, required=False)
     like_genre = forms.ModelMultipleChoiceField(label="好み",
                                                 queryset=Genres.objects.all(), widget=forms.CheckboxSelectMultiple)

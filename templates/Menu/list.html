@@ -14,10 +14,10 @@
 <h1>検索結果</h1>
 {% for menu in menu_list %}
 
-<a href={% url 'detail' pk=menu.id %}>{{menu.menu_name}}</a>
+<a href={% url 'menu_proposal:detail' pk=menu.id %}>{{menu.menu_name}}</a>
 {% if user.is_superuser %}
-<a class="btn btn-primary" href="{% url 'update' menu.pk %}">修正</a>
-<a class="btn btn-danger" href="{% url 'delete' menu.pk %}">削除</a>
+<a class="btn btn-primary" href="{% url 'menu_proposal:update' menu.pk %}">修正</a>
+<a class="btn btn-danger" href="{% url 'menu_proposal:delete' menu.pk %}">削除</a>
 {% endif %}
 <br>
 {% endfor %}
