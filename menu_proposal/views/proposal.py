@@ -41,20 +41,18 @@ class MenuProposalView(FormView):
         menu_list = proposal.propose()
 
         menu = [i.name for i in Menu._meta.get_fields()]
-        sum = {"name": Menu.objects.aggregate(Sum('menu_name')), "red": 0.0, "yellow": 0.0, "green": 0.0,
+        sum = {"値段": 0, "red": 0.0,  "green": 0.0, "yellow": 0.0,
                "energy": 0.0, "lipid": 0.0, "salt": 0.0, "carbohydrate": 0.0}
-        sum["sum"] = []
-        # for i in menu_list[0]:
-        #     sum["red"] += i.menu_red_point
-        #     sum["green"] += i.menu_green_point
-        #     sum["yellow"] += i.menu_yellow_point
-        #     sum["energy"] += i.menu_energy
+        for i in menu_list:
+            sum["値段"] += i.menu_value
+            sum["red"] += i.menu_red_point
+            sum["green"] += i.menu_green_point
+            sum["yellow"] += i.menu_yellow_point
+            sum["energy"] += i.menu_energy
+            sum["lipid"] += i.menu_lipid
+            sum["salt"] += i.menu_salt_content
+            sum["carbohydrate"] += i.menu_carbohydrate
 
-        for i in menu:
-            sum["sum"].append(Menu.objects.aggregate(Sum(i)))
-        # for i in menu:
-        #     sum["name"].append(i.menu_name)
-        #     sum["red"] += i.menu_red_point
         return render(self.request, 'Proposal/proposal_result.html', {"form": form, "menu": menu_list, "sum": sum})
 
     def form_invalid(self, form):
@@ -83,17 +81,10 @@ class Menu_Proposal:
 
     def propose(self):
         menu_list = []
-        print(self.staplefood)
-        print(self.maindish)
-        print(self.sidedish)
-        print(self.dessert)
-        print(self.soup)
         vec_tmp = np.array([2, 1, 5])
         max_value = 100000.0
-        max_point = 0
-        tmp_value = 0
+        max_point = -1000
         for staple in self.staplefood:
-            tmp_value = staple.menu_value
             # 主食のジャンルのリスト（ごはんと（麺、丼）の時で処理を変える）
             staple_genre = []
             menu_genres = []
@@ -103,47 +94,39 @@ class Menu_Proposal:
             for main in self.maindish:
                 if "ごはん" in staple_genre and main.menu_name is "null":
                     continue
-                if main.menu_name is "null":
-                    tmp_value += main.menu_value
+                if main.menu_name != "null":
                     for i in main.menu_genre.all():
                         menu_genres.append(i.pk)
-                if self.budget < tmp_value:
-                    continue
                 for side in self.sidedish:
                     if "ごはん" in staple_genre and side.menu_name is "null":
                         continue
-                    if side.menu_name is "null":
-                        tmp_value += side.menu_value
+                    if side.menu_name != "null":
                         for i in side.menu_genre.all():
                             menu_genres.append(i.pk)
-
-                    if self.budget < tmp_value:
-                        continue
                     for dessert in self.dessert:
-                        if dessert.menu_name is "null":
-                            tmp_value += dessert.menu_value
+                        if dessert.menu_name != "null":
                             for i in dessert.menu_genre.all():
                                 menu_genres.append(i.pk)
-                        if self.budget < tmp_value:
-                            continue
-                        for soup in self.soup:
-                            if soup.menu_name is "null":
-                                tmp_value += soup.menu_value
-                                for i in soup.menu_genre.all():
+                        for S in self.soup:
+                            if S.menu_name != "null":
+                                for i in S.menu_genre.all():
                                     menu_genres.append(i.pk)
-
-                            if self.budget < tmp_value:
-                                continue
-                            l = [staple, main, side, dessert, soup]
-                            vec = np.array([0, 0, 0])
+                            l = [staple, main, side, dessert, S]
+                            vec = np.array([0.0, 0.0, 0.0])
                             l = [s for s in l if s.menu_name != 'null']
-
+                            value = 0
+                            for i in l:
+                                value += i.menu_value
+                            if self.budget < value:
+                                continue
                             tmp_point = len(
                                 list(set(self.like_genre) & set(menu_genres)))
+                            print(tmp_point)
                             if max_point < tmp_point:
                                 max_point = tmp_point
                                 menu_list = l
-                            else:
+                                print(max_point, menu_list)
+                            elif max_point == tmp_point:
                                 for i in l:
                                     vec += ([i.menu_red_point,
                                              i.menu_green_point, i.menu_yellow_point])
@@ -152,6 +135,8 @@ class Menu_Proposal:
                                 if max_value > cmp_value:
                                     max_value = cmp_value
                                     menu_list = l
+                                    print(max_point, menu_list)
+
         return menu_list
 
         # loopで得た献立をリストに入れる
