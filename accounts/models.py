@@ -38,3 +38,11 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+
+class Allergies(models.Model):
+    name = models.CharField(max_length=128)
+
+
+class Genres(models.Model):
+    name = models.CharField(max_length=128)
