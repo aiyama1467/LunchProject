@@ -1,17 +1,12 @@
-from django.views.generic import FormView
-from menu_proposal.forms import ProposalForm
-from django.urls import reverse_lazy
-from menu_proposal.models import *
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
-from django.views.generic import *
-from django.urls import reverse_lazy
-from django.db.models import Q, Sum
 from django import forms
+from django.urls import reverse_lazy
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import FormView
+from django.db.models import Q, Sum
 from django.shortcuts import render
-import itertools
-from django.core import serializers
-import collections
+from menu_proposal.forms import ProposalForm
+from menu_proposal.models import *
 import numpy as np
 
 
@@ -24,7 +19,11 @@ class MenuProposalView(FormView):
     success_url = reverse_lazy('proposal_result')
 
     def get_initial(self):
-        return super().get_initial()
+        initial = super().get_initial()
+        initial['time'] = 1
+        if self.request.user.is_authenticated and self.request.user.is_superuser == False:
+            print("ログイン中")
+        return initial
 
     def form_valid(self, form):
         # アレルギーリスト
@@ -42,17 +41,18 @@ class MenuProposalView(FormView):
         # menu_listから各要素の合計値を求める
         menu_sum_list = []
         for menu in menu_list:
-            sum = {"値段": 0, "red": 0.0,  "green": 0.0, "yellow": 0.0,
-                   "energy": 0.0, "lipid": 0.0, "salt": 0.0, "carbohydrate": 0.0}
+            sum = {"税込価格（Price (incl. tax)）": 0, "カロリー（Energy）": 0.0,  "炭水化物（Carbohydrates）": 0.0, "塩分（Salt）": 0.0, "脂質（Fat）": 0.0,
+                   "タンパク質（Protein）": 0.0, "赤（Red）": 0.0,  "緑（Green）": 0.0, "黄（Yellow）": 0.0, }
             for i in menu:
                 sum["値段"] += i.menu_value
-                sum["red"] += i.menu_red_point
-                sum["green"] += i.menu_green_point
-                sum["yellow"] += i.menu_yellow_point
-                sum["energy"] += i.menu_energy
-                sum["lipid"] += i.menu_lipid
-                sum["salt"] += i.menu_salt_content
-                sum["carbohydrate"] += i.menu_carbohydrate
+                sum["カロリー"] += i.menu_energy
+                sum["炭水化物"] += i.menu_carbohydrate
+                sum["塩分"] += i.menu_salt_content
+                sum["脂質"] += i.menu_lipid
+                sum["タンパク質"] += i.menu_protein
+                sum["赤"] += i.menu_red_point
+                sum["緑"] += i.menu_green_point
+                sum["黄"] += i.menu_yellow_point
             menu_sum_list.append(sum)
 
         return render(self.request, 'Proposal/proposal_result.html', {"form": form, "menu": menu_list, "sum": menu_sum_list, "time": range(int(form.cleaned_data["time"]))})

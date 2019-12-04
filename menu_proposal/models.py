@@ -13,7 +13,7 @@ def get_file_path(instance, filename):
 
 class Allergies(models.Model):
 
-    allergy_name = models.TextField(("アレルギー名"))
+    allergy_name = models.TextField(("アレルギー（Allergic substance）"))
 
     class Meta:
         verbose_name = ("allergies")
@@ -24,7 +24,7 @@ class Allergies(models.Model):
 
 
 class Genres(models.Model):
-    genre_name = models.TextField(("ジャンル名"))
+    genre_name = models.TextField(("ジャンル名（Genre）"))
 
     class Meta:
         verbose_name = ("Genres")
@@ -36,21 +36,22 @@ class Genres(models.Model):
 
 class Menu(models.Model):
 
-    menu_name = models.CharField(("名前"), max_length=128, unique=True)
-    menu_value = models.IntegerField(("価格"))
-    menu_energy = models.FloatField(("カロリー"))
-    menu_carbohydrate = models.FloatField(("炭水化物"))
-    menu_salt_content = models.FloatField(("塩分"))
-    menu_lipid = models.FloatField(("脂質"))
-    menu_protein = models.FloatField(("タンパク質"))
-    menu_red_point = models.FloatField(("赤"))
-    menu_green_point = models.FloatField(("緑"))
-    menu_yellow_point = models.FloatField(("黄"))
+    menu_name = models.CharField(
+        ("名前（Menu name）"), max_length=128, unique=True)
+    menu_value = models.IntegerField(("価格（Price (incl. tax)）"))
+    menu_energy = models.FloatField(("カロリー（Energy）"))
+    menu_carbohydrate = models.FloatField(("炭水化物（Carbohydrates）"))
+    menu_salt_content = models.FloatField(("塩分（Salt）"))
+    menu_lipid = models.FloatField(("脂質（Fat）"))
+    menu_protein = models.FloatField(("タンパク質（Protein）"))
+    menu_red_point = models.FloatField(("赤（Red）"))
+    menu_green_point = models.FloatField(("緑（Green）"))
+    menu_yellow_point = models.FloatField(("黄（Yellow）"))
     menu_picture = models.ImageField(
-        ("画像"), upload_to=get_file_path, height_field=None, width_field=None, max_length=None, null=True, blank=True)
-    menu_genre = models.ManyToManyField(Genres, verbose_name=("ジャンル"))
+        ("画像（Image）"), upload_to=get_file_path, height_field=None, width_field=None, max_length=None, null=True, blank=True)
+    menu_genre = models.ManyToManyField(Genres, verbose_name=("ジャンル（Genre）"))
     menu_allergies = models.ManyToManyField(
-        Allergies, verbose_name=("アレルギー"), null=True, blank=True)
+        Allergies, verbose_name=("アレルギー（Allergic substance）"), null=True, blank=True)
 
     class Meta:
         verbose_name = ("menu")
