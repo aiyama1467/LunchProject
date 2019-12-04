@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load index %}
 {% block content %}
 指定した内容<br>
 {% for field in form %}
@@ -9,13 +10,21 @@
 {% endfor %}
 <br>
 おすすめメニュー<br>
-{% for name in menu %}
-{{name.menu_name}}<br>
+{% for i in time %}
+{% for name in menu|index:i %}
+{{name.menu_name}}
+<br>
+{% endfor %}
+{% for key, value in sum|get_items:i %}
+{{key}}:{{value|floatformat:-2}}<br>
 {% endfor %}
 <br>
+<br>
+{% endfor %}
 {% for key, value in sum.items %}
 {{key}}:{{value|floatformat:-2}}<br>
 {% endfor %}
+
 <input type="button" value="戻る" onClick="javascript:history.go(-1);">
 <hr>
 {% endblock %}
