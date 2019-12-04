@@ -41,8 +41,9 @@ class MenuProposalView(FormView):
         proposal = Menu_Proposal(
             form.cleaned_data["time"], allergies, form.cleaned_data["budget"], like_genre)
         menu_list = proposal.propose()
+        # おすすめの献立が日数分提案できなかった時メッセージを表示し、入力フォームに戻る
         if len(menu_list) < int(form.cleaned_data["time"]):
-            messages.info(self.request, "予算が低すぎます。1日当たり300円以上にしてください")
+            messages.info(self.request, "予算が低すぎます。予算を上げるか、食事回数を減らしてください。")
             return super().form_invalid(form)
         # menu_listから各要素の合計値を求める
         menu_sum_list = []
@@ -60,6 +61,7 @@ class MenuProposalView(FormView):
                 sum["緑（Green）"] += i.menu_green_point
                 sum["黄（Yellow）"] += i.menu_yellow_point
             menu_sum_list.append(sum)
+        # 日付のリスト
         date = [timezone.datetime.today()]
         for i in range(1, int(form.cleaned_data["time"])):
             if date[i - 1].strftime('%w') == '5':
@@ -67,7 +69,7 @@ class MenuProposalView(FormView):
             else:
                 aa = date[i - 1] + timezone.timedelta(days=1)
             date.append(aa)
-        # 栄養素の単位
+        # 栄養素の単位のリスト
         unit = ["円", "kcal", "g", "g", "g", "g", "", "", ""]
         # 提案した献立の総栄養素
         result = {}
@@ -146,7 +148,7 @@ class Menu_Proposal:
                             value = 0
                             for i in l:
                                 value += i.menu_value
-                            # 予算オーバーの場合
+                            # 予算オーバーの場合追加しない
                             if self.budget < value:
                                 continue
                             # 献立の評価 genreの一致率 > menuの栄養

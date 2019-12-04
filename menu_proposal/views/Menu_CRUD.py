@@ -91,6 +91,14 @@ class MenuUpdateView(UpdateView):
     fields = '__all__'
     success_url = reverse_lazy('menu_proposal:list')
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields['menu_genre'].widget = forms.CheckboxSelectMultiple()
+        form.fields['menu_genre'].queryset = Genres.objects
+        form.fields['menu_allergies'].widget = forms.CheckboxSelectMultiple()
+        form.fields['menu_allergies'].queryset = Allergies.objects
+        return form
+
     def form_valid(self, form):
         result = super().form_valid(form)
         messages.success(
