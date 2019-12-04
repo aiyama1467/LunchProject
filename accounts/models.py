@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from menu_proposal.models import Allergies, Genres
+
 
 class UserManager(UserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -33,16 +35,10 @@ class UserManager(UserManager):
 class User(AbstractUser):
     username = models.CharField(_('username'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), unique=True)
+    allergy = models.ManyToManyField(Allergies, blank=True, null=True)
+    genre = models.ManyToManyField(Genres)
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-
-
-class Allergies(models.Model):
-    name = models.CharField(max_length=128)
-
-
-class Genres(models.Model):
-    name = models.CharField(max_length=128)

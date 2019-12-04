@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>User Information</h1>
+    <p>email</p>
+    {{ user.email }} <br>
+    <p>allergy</p>
+    {% for allelgy in user.allergy.all %}
+        {{ allelgy.allergy_name }}
+    {% endfor %}
+    <p>genre</p>
+    {% for genre in user.genre.all %}
+        {{ genre.genre_name }}
+    {% endfor %}
+
+{% endblock %}

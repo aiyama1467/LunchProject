@@ -4,15 +4,21 @@ from django.contrib.auth.forms import (
 )
 from django.contrib.auth import get_user_model
 
+from menu_proposal.models import Allergies, Genres
+
 User = get_user_model()
 
 
 class UserCreateForm(UserCreationForm):
-    """ユーザー登録用フォーム"""
+    allergy = forms.ModelMultipleChoiceField(label="アレルギー", queryset=Allergies.objects.all(),
+                                             widget=forms.CheckboxSelectMultiple, required=False)
+    genre = forms.ModelMultipleChoiceField(label="好み", queryset=Genres.objects.all(),
+                                           widget=forms.CheckboxSelectMultiple)
 
+    """ユーザー登録用フォーム"""
     class Meta:
         model = User
-        fields = ('email',)
+        fields = ('email', 'password1', 'password2', 'allergy', 'genre')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,3 +29,11 @@ class UserCreateForm(UserCreationForm):
         email = self.cleaned_data['email']
         User.objects.filter(email=email, is_active=False).delete()
         return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+
+        if commit:
+            user.save()
+            self.save_m2m()
+        return user
