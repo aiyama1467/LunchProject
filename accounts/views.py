@@ -29,4 +29,10 @@ class SignUpView(generic.CreateView):
 class SignupSuccessful(generic.TemplateView):
     template_name = 'accounts/signup_successful.html'
 
+
+class UserMyPage(generic.DetailView):
+    model = User
+    template_name = 'accounts/user_my_page.html'
+    context_object_name = 'user'
+
 # Todo: signup, login, logoutのページのレイアウトを調整する
