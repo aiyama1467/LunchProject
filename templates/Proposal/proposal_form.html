@@ -1,26 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if messages %}
-<div>
-    {% for message in messages %}
-    <p> {{ message }}</p>
-    {% endfor %}
-</div>
-{% endif %}
 <form method="post" enctype="multipart/form-data">
     {% for field in form %}
-    <div class="field">
+    <div>
         {{ field.label_tag }}
         {% if field.help_text %}
-        <span class="helptext">{{ field.help_text }}</span>
+        <span>{{ field.help_text }}</span>
         {% endif %}
         {{ field }}
         {% if field.name == "budget" %}
         円
         {% endif %}
         {% if field.errors %}
-        <div class="errorlist">
+        <div>
             {% for error in field.errors %}
             {{ error }}<br>
             {% endfor %}

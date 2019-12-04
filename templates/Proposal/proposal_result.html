@@ -19,7 +19,7 @@
     <div>
         {% for key, value in sum|get_items:i %}
         {{key}}:
-        {{value|floatformat:-2}}{{unit|index:forloop.counter0}}
+        {{value|floatformat:-1}}{{unit|index:forloop.counter0}}
         <br>
         {% endfor %}
     </div>
@@ -30,7 +30,7 @@
         総計
     </legend>
     {% for key, value in total.items %}
-    {{key}}:{{value|floatformat:-2}}{{unit|index:forloop.counter0}}<br>
+    {{key}}:{{value|floatformat:-1}}{{unit|index:forloop.counter0}}<br>
     {% endfor %}
 </fieldset>
 {{total.name }}
