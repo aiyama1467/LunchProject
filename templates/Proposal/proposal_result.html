@@ -9,17 +9,22 @@
 </div>
 {% endfor %}
 <br>
-おすすめメニュー<br>
-{% for i in time %}
-{% for name in menu|index:i %}
-{{name.menu_name}}
-<br>
-{% endfor %}
-{% for key, value in sum|get_items:i %}
-{{key}}:{{value|floatformat:-2}}<br>
-{% endfor %}
-<br>
-<br>
+<h3>おすすめメニュー</h3>
+<div>
+    <ul>
+        {% for i in time %}
+        {% for name in menu|index:i %}
+        <li>{{name.menu_name}}</li>
+        {% endfor %}
+    </ul>
+</div>
+<div>
+    {% for key, value in sum|get_items:i %}
+    {{key}}:{{value|floatformat:-2}}<br>
+    {% endfor %}
+    <br>
+</div>
+
 {% endfor %}
 {% for key, value in sum.items %}
 {{key}}:{{value|floatformat:-2}}<br>
