@@ -8,18 +8,30 @@
     <table>
     <thead>
     <tr>
-        <th>食事日</th><th>メニュー</th>
+        <th>食事日</th>
+        <th>メニュー</th>
+        <th>カロリー</th>
+        <th>炭水化物</th>
+        <th>塩分</th>
+        <th>脂質</th>
+        <th>タンパク質</th>
+        <th>赤</th>
+        <th>緑</th>
+        <th>黄</th>
     </tr>
     </thead>
     <tbody>
-    {% for log in eat_log %}
+    {% for date, nutrient in nutrient_shift.items %}
         <tr>
-            <td>{{ log.eat_datetime }}</td>
-            <td>
-                {% for m in log.menu.all %}
-                    {{ m.menu_name }},
-                {% endfor %}
-            </td>
+            <td>{{ date }}</td>
+            <td>{{ nutrient.energy }}</td>
+            <td>{{ nutrient.carbohydrates }}</td>
+            <td>{{ nutrient.salt }}</td>
+            <td>{{ nutrient.fat }}</td>
+            <td>{{ nutrient.protein }}</td>
+            <td>{{ nutrient.red }}</td>
+            <td>{{ nutrient.green }}</td>
+            <td>{{ nutrient.yellow }}</td>
         </tr>
     {% endfor %}
     </tbody>
