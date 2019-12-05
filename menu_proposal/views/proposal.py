@@ -25,7 +25,18 @@ class MenuProposalView(FormView):
         initial = super().get_initial()
         initial['time'] = 1
         if self.request.user.is_authenticated and self.request.user.is_superuser == False:
-            print("一般ユーザログイン中")
+            user = self.request.user
+            # 好みのジャンルの初期値の設定
+            genre = []
+            for i in user.genre.all():
+                genre.append(i.pk)
+            initial['like_genre'] = genre
+            # アレルギーの初期値の設定
+            allergy = []
+            for i in user.allergy.all():
+                allergy.append(i.pk)
+            initial['allergy'] = allergy
+
         return initial
 
     def form_valid(self, form):
@@ -43,7 +54,7 @@ class MenuProposalView(FormView):
         menu_list = proposal.propose()
         # おすすめの献立が日数分提案できなかった時メッセージを表示し、入力フォームに戻る
         if len(menu_list) < int(form.cleaned_data["time"]):
-            messages.info(self.request, "予算が低すぎます。予算を上げるか、食事回数を減らしてください。")
+            messages.error(self.request, "予算が低すぎます。予算を上げるか、食事回数を減らしてください。")
             return super().form_invalid(form)
         # menu_listから各要素の合計値を求める
         menu_sum_list = []
@@ -88,15 +99,15 @@ class Menu_Proposal:
         self.budget = budget / self.time
         self.like_genre = like_genre
         self.staplefood = [i for i in Menu.objects.filter(
-            menu_genre__genre_name__in=['丼', '麺', 'ごはん']).filter(~Q(menu_allergies__in=allergy))]
+            menu_genre__genre_name__in=['丼（Bowl）', '麺（Noodle）', 'ごはん（Rice）']).filter(~Q(menu_allergies__in=allergy))]
         self.maindish = [i for i in Menu.objects.filter(
-            menu_genre__genre_name='主菜').filter(~Q(menu_allergies__in=allergy))]
+            menu_genre__genre_name='主菜（Main dish）').filter(~Q(menu_allergies__in=allergy))]
         self.sidedish = [i for i in Menu.objects.filter(
-            menu_genre__genre_name='副菜').filter(~Q(menu_allergies__in=allergy))]
+            menu_genre__genre_name='副菜（Side dish）').filter(~Q(menu_allergies__in=allergy))]
         self.dessert = [i for i in Menu.objects.filter(
-            menu_genre__genre_name='デザート').filter(~Q(menu_allergies__in=allergy))]
+            menu_genre__genre_name='デザート（Dessert）').filter(~Q(menu_allergies__in=allergy))]
         self.soup = [i for i in Menu.objects.filter(
-            menu_genre__genre_name='汁物').filter(~Q(menu_allergies__in=allergy))]
+            menu_genre__genre_name='汁物（Soup）').filter(~Q(menu_allergies__in=allergy))]
         self.maindish.append(Menu(menu_name="null"))
         self.sidedish.append(Menu(menu_name="null"))
         self.dessert.append(Menu(menu_name="null"))
@@ -124,7 +135,6 @@ class Menu_Proposal:
 
     def propose(self):
         menu_list = []
-
         max_value = 100000.0
         max_point = -1000
         for staple in self.staplefood:
@@ -168,4 +178,5 @@ class Menu_Proposal:
                             if len(menu_list) < 5:
                                 menu_list.append(l)
         menu_list = menu_list[0: self.time]
+
         return menu_list

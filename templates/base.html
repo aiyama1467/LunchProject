@@ -20,6 +20,7 @@
                 <ul>
                     {% if user.is_authenticated %}
                     <li><a href="{% url 'logout' %}" class="logout">Logout</a></li>
+                    <li><a href="{% url 'accounts:my_page' pk=user.pk %}" class="logout">my_page</a></li>
                     {% else %}
                     <li><a href="{% url 'accounts:signup' %}" class="signup">Sign up</a></li>
                     <li><a href="{% url 'login' %}" class="login">Login</a></li>
