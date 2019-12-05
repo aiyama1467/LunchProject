@@ -2,6 +2,32 @@
 
 {% block content %}
     <h1>User Information</h1>
+
+    <div>
+    <h2>食事履歴</h2>
+    <table>
+    <thead>
+    <tr>
+        <th>食事日</th><th>メニュー</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for log in eat_log %}
+        <tr>
+            <td>{{ log.eat_datetime }}</td>
+            <td>
+                {% for m in log.menu.all %}
+                    {{ m.menu_name }},
+                {% endfor %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+    </div>
+
+    <div>
+    <h2>ユーザ情報</h2>
     <p>email</p>
     {{ user.email }} <br>
     <p>allergy</p>
@@ -12,7 +38,8 @@
     {% for genre in user.genre.all %}
         {{ genre.genre_name }}
     {% endfor %}
-    <br>
+    </div>
+
     <a href="{% url 'accounts:delete' %}">アカウント削除</a>
 
 {% endblock %}
