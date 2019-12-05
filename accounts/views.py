@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
@@ -5,6 +6,17 @@ from django.contrib.auth import logout
 
 from accounts.models import User
 from .forms import UserCreateForm
+
+
+class OnlyYouMixin(UserPassesTestMixin):
+    """
+    異なるユーザからのアクセスを防ぐアクセス制限
+    """
+    raise_exception = True
+
+    def test_func(self):
+        user = self.request.user
+        return user.pk == self.kwargs['pk'] or user.is_superuser
 
 
 class SignUpView(generic.CreateView):
@@ -27,13 +39,13 @@ class SignUpView(generic.CreateView):
         return render(request, self.template_name, self.context)
 
 
-class UserMyPage(generic.DetailView):
+class UserMyPage(OnlyYouMixin, generic.DetailView):
     model = User
     template_name = 'accounts/user_my_page.html'
     context_object_name = 'user'
 
 
-class UserDeleteView(generic.TemplateView):
+class UserDeleteView(OnlyYouMixin, generic.TemplateView):
 
     def get(self, request, *args, **kwargs):
         User.objects.filter(email=self.request.user.email).delete()
