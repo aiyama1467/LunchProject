@@ -12,5 +12,7 @@
     {% for genre in user.genre.all %}
         {{ genre.genre_name }}
     {% endfor %}
+    <br>
+    <a href="{% url 'accounts:delete' %}">アカウント削除</a>
 
 {% endblock %}

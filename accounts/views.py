@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
+from django.contrib.auth import logout
 
 from accounts.models import User
 from .forms import UserCreateForm
@@ -30,5 +31,13 @@ class UserMyPage(generic.DetailView):
     model = User
     template_name = 'accounts/user_my_page.html'
     context_object_name = 'user'
+
+
+class UserDeleteView(generic.TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        User.objects.filter(email=self.request.user.email).delete()
+        logout(self.request)
+        return render(self.request, 'accounts/user_delete.html')
 
 # Todo: signup, login, logoutのページのレイアウトを調整する
