@@ -21,13 +21,9 @@ class SignUpView(generic.CreateView):
         form = self.form_class(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('accounts:signup_successful')
+            return render(request, 'accounts/signup_successful.html')
 
         return render(request, self.template_name, self.context)
-
-
-class SignupSuccessful(generic.TemplateView):
-    template_name = 'accounts/signup_successful.html'
 
 
 class UserMyPage(generic.DetailView):
