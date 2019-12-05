@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth import logout
 
-from accounts.models import User
+from accounts.models import User, EatLog
 from .forms import UserCreateForm
 
 
@@ -43,6 +43,11 @@ class UserMyPage(OnlyYouMixin, generic.DetailView):
     model = User
     template_name = 'accounts/user_my_page.html'
     context_object_name = 'user'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['eat_log'] = EatLog.objects.filter(user=self.request.user)
+        return context
 
 
 class UserDeleteView(OnlyYouMixin, generic.TemplateView):
