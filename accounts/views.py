@@ -50,11 +50,15 @@ class UserMyPage(OnlyYouMixin, generic.DetailView):
         return context
 
 
-class UserDeleteView(OnlyYouMixin, generic.TemplateView):
+class UserDeleteView(generic.TemplateView):
 
     def get(self, request, *args, **kwargs):
-        User.objects.filter(email=self.request.user.email).delete()
-        logout(self.request)
-        return render(self.request, 'accounts/user_delete.html')
+        if self.request.user.is_authenticated:
+            User.objects.filter(email=self.request.user.email).delete()
+            logout(self.request)
+            return render(self.request, 'accounts/user_delete.html')
+        else:
+            return redirect('menu_proposal:home')
+
 
 # Todo: signup, login, logoutのページのレイアウトを調整する
