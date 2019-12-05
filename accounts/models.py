@@ -44,5 +44,5 @@ class User(AbstractUser):
 
 class EatLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    eat_datetime = models.DateField(auto_now=True)
+    eat_datetime = models.DateField()
     menu = models.ManyToManyField(Menu)

@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from menu_proposal.forms import ProposalForm
 from menu_proposal.models import *
+from accounts.models import EatLog
 import numpy as np
 import operator
 import itertools
@@ -54,7 +55,7 @@ class MenuProposalView(FormView):
         menu_list = proposal.propose()
         # おすすめの献立が日数分提案できなかった時メッセージを表示し、入力フォームに戻る
         if len(menu_list) < int(form.cleaned_data["time"]):
-            messages.error(self.request, "予算が低すぎます。予算を上げるか、食事回数を減らしてください。")
+            messages.error(self.request, "おすすめ献立を見つけることができませんでした。条件を変えてください")
             return super().form_invalid(form)
         # menu_listから各要素の合計値を求める
         menu_sum_list = []
@@ -74,12 +75,34 @@ class MenuProposalView(FormView):
             menu_sum_list.append(sum)
         # 日付のリスト
         date = [timezone.datetime.today()]
+        # 土曜日の時,一日目を月曜日に
+        if date[0].strftime('%w') == "6":
+            date[0] += timezone.timedelta(days=2)
+        # 日曜日の時,一日目を月曜日に
+        if date[0].strftime('%w') == "0":
+            date[0] += timezone.timedelta(days=1)
+        # 一般ユーザーが利用したとき食事履歴を追加
+        if self.request.user.is_authenticated and self.request.user.is_superuser == False:
+            log = EatLog.objects.create(
+                user=self.request.user, eat_datetime=date[0])
+            for menu in menu_list[0]:
+                log.menu.add(menu)
+            messages.info(self.request, "食事履歴を追加しました")
+            log.save()
         for i in range(1, int(form.cleaned_data["time"])):
+
             if date[i - 1].strftime('%w') == '5':
                 aa = date[i - 1] + timezone.timedelta(days=3)
             else:
                 aa = date[i - 1] + timezone.timedelta(days=1)
             date.append(aa)
+            # 一般ユーザーが利用したとき食事履歴を追加
+            if self.request.user.is_authenticated and self.request.user.is_superuser == False:
+                log = EatLog.objects.create(
+                    user=self.request.user, eat_datetime=date[i])
+                for menu in menu_list[0]:
+                    log.menu.add(menu)
+                log.save()
         # 栄養素の単位のリスト
         unit = ["円", "kcal", "g", "g", "g", "g", "", "", ""]
         # 提案した献立の総栄養素
@@ -99,7 +122,7 @@ class Menu_Proposal:
         self.budget = budget / self.time
         self.like_genre = like_genre
         self.staplefood = [i for i in Menu.objects.filter(
-            menu_genre__genre_name__in=['丼（Bowl）', '麺（Noodle）', 'ごはん（Rice）']).filter(~Q(menu_allergies__in=allergy))]
+            menu_genre__genre_name__in=['丼（Bowl）', '麺（Noodles）', 'ごはん（Rice）']).filter(~Q(menu_allergies__in=allergy))]
         self.maindish = [i for i in Menu.objects.filter(
             menu_genre__genre_name='主菜（Main dish）').filter(~Q(menu_allergies__in=allergy))]
         self.sidedish = [i for i in Menu.objects.filter(
@@ -113,6 +136,7 @@ class Menu_Proposal:
         self.dessert.append(Menu(menu_name="null"))
         self.soup.append(Menu(menu_name="null"))
 
+    # ジャンルの一致している個数を求める
     def get_point(self, menu):
         menu_genres = []
         for i in menu:
@@ -123,6 +147,7 @@ class Menu_Proposal:
         point = len(list(set(self.like_genre) & set(menu_genres)))
         return point
 
+    # 栄養のバランスを求める
     def get_value(self, menu):
         vec_tmp = np.array([2, 1, 5])
         vec = np.array([0.0, 0.0, 0.0])
@@ -133,33 +158,41 @@ class Menu_Proposal:
             cmp_value = np.linalg.norm(vec_tmp - vec)
         return cmp_value
 
+    def get_price(self, menu_list):
+        l = [s for s in menu_list if s.menu_name != 'null']
+        # 値段の合計
+        price = 0
+        for i in l:
+            price += i.menu_value
+        return price
+
     def propose(self):
         menu_list = []
         max_value = 100000.0
         max_point = -1000
         for staple in self.staplefood:
+            if self.budget < self.get_price([staple]):
+                continue
             # 主食のジャンルのリスト（ごはんと（麺、丼）の時で処理を変える）
             staple_genre = []
             for i in staple.menu_genre.all():
                 staple_genre.append(i.genre_name)
             for main in self.maindish:
-                if "ごはん" in staple_genre and main.menu_name is "null":
+                if ("ごはん" in staple_genre and main.menu_name is "null") or self.budget < self.get_price([staple, main]):
                     continue
                 for side in self.sidedish:
-                    if "ごはん" in staple_genre and side.menu_name is "null":
+                    if ("ごはん" in staple_genre and side.menu_name is "null") or self.budget < self.get_price([staple, main, side]):
                         continue
                     for dessert in self.dessert:
+                        if self.budget < self.get_price([staple, main, side, dessert]):
+                            continue
                         for soup in self.soup:
                             # 献立のリスト
                             l = [staple, main, side, dessert, soup]
                             # nullの削除
                             l = [s for s in l if s.menu_name != 'null']
-                            # 値段の合計
-                            value = 0
-                            for i in l:
-                                value += i.menu_value
                             # 予算オーバーの場合追加しない
-                            if self.budget < value:
+                            if self.budget < self.get_price(l):
                                 continue
                             # 献立の評価 genreの一致率 > menuの栄養
                             for menu_value in range(min(5, len(menu_list))):
