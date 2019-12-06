@@ -1,28 +1,37 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<form method="post" enctype="multipart/form-data">
+<method="post" enctype="multipart/form-data">
     <h2>献立提案</h2>
     {% for field in form %}
     <div>
+
         {{ field.label_tag }}
         {% if field.help_text %}
         <span>{{ field.help_text }}</span>
         {% endif %}
-        {{ field }}
-        {% if field.name == "budget" %}
-        円
-        {% endif %}
+        <br>
+        {% for i in field %}
+        <label class = "selectbox">
+            {{i}}
+            {% if field.name == "budget" %}
+            円
+            {% endif %}
+            </label>
+        {% endfor %}
+        <br>
         {% if field.errors %}
         <div>
             {% for error in field.errors %}
             {{ error }}<br>
             {% endfor %}
         </div>
-        {% endif %}
     </div>
+        {% endif %}
+    <br>
     {% endfor %}
-    <input type="submit">
+    <input type="submit" value="送信">
     {% csrf_token %}
 </form>
 {% endblock content %}
