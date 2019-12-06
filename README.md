@@ -7,3 +7,12 @@ makemigrations → migrateした後にアレルギーと好みを入れる
 $ python init_database.py
 ```
 で初期化できます。
+
+## 昼食リストのデータベースへの入れ方
+以下のコマンドを実行してください
+```
+$ sqlite3 db.database
+sqlite> .separator ,
+sqlite> .import output.csv menu_proposal_menu
+sqlite> .quit
+```
