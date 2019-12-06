@@ -36,9 +36,6 @@
         <li><a href="/">ホーム<span>HOME</span></a></li>
         <li><a href={% url 'menu_proposal:list' %} class="act">メニュー<span>MENU</span></a></li>
         <li><a href={% url 'menu_proposal:proposal' %} class="act">献立提案<span>PROPOSAL</span></a></li>
-        {% if user.is_superuser %}
-        <li><a href={% url 'menu_proposal:add' %} class="act">メニューの追加<span>MenuAdd</span></a></li>
-        {% endif %}
 
         {% if user.is_authenticated %}
         <li><a href="{% url 'logout' %}" class="logout">ログアウト<span>Logout</span></a></li>
@@ -55,9 +52,7 @@
         <li><a>ホーム<span>HOME</span></a></li>
         <li><a href={% url 'menu_proposal:list' %} class="act">メニュー<span>SERVICE</span></a></li>
         <li><a href={% url 'menu_proposal:proposal' %} class="act">献立提案<span>RECRUIT</span></a></li>
-        {% if user.is_superuser %}
-        <li><a href={% url 'menu_proposal:add' %} class="act">メニューの追加<span>MenuAdd</span></a></li>
-        {% endif %}
+
         <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>Signup</span></a></li>
         {% if user.is_authenticated %}
         <li><a href="{% url 'logout' %}" class="logout">ログアウト<span>Logout</span></a></li>

@@ -54,4 +54,11 @@
 
     <a href="{% url 'accounts:delete' %}">アカウント削除</a>
 
+    {% if user.is_superuser %}
+    <ul class="super">
+        <li><a href={% url 'menu_proposal:list' %} class="act">メニューの削除修正 <span>MENU</span></a></li>
+        <li><a href={% url 'menu_proposal:add' %} class="act">メニューの追加<span>MenuAdd</span></a></li>
+    </ul>
+    {%endif%}
+
 {% endblock %}
