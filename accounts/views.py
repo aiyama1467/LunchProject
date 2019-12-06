@@ -22,6 +22,7 @@ class OnlyYouMixin(UserPassesTestMixin):
 
 
 class SignUpView(generic.CreateView):
+    """ユーザ登録ページのView"""
     form_class = UserCreateForm
     success_url = reverse_lazy('accounts:signup_successful')
     template_name = 'accounts/signup.html'
@@ -42,6 +43,7 @@ class SignUpView(generic.CreateView):
 
 
 class UserMyPage(OnlyYouMixin, generic.DetailView):
+    """マイページのView"""
     model = User
     template_name = 'accounts/user_my_page.html'
     context_object_name = 'user'
@@ -93,7 +95,7 @@ class UserMyPage(OnlyYouMixin, generic.DetailView):
 
 
 class UserDeleteView(generic.TemplateView):
-
+    """削除のView"""
     def get(self, request, *args, **kwargs):
         if self.request.user.is_authenticated:
             User.objects.filter(email=self.request.user.email).delete()
