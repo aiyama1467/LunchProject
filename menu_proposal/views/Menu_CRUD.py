@@ -38,48 +38,45 @@ class MenuListView(ListView):
     model = Menu
     template_name = "Menu/list.html"
     paginate_by = 10
-    def post(self, request, *args, **kwargs):
 
+    def post(self, request, *args, **kwargs):
         form_value = [
             self.request.POST.get('name', None),
+            self.request.POST.getlist('condition_genre')
         ]
         request.session['form_value'] = form_value
         # 検索時にページネーションに関連したエラーを防ぐ
         self.request.GET = self.request.GET.copy()
         self.request.GET.clear()
-
         return self.get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         # sessionに値がある場合、その値をセットする。（ページングしてもform値が変わらないように）
         name = ''
         if 'form_value' in self.request.session:
             form_value = self.request.session['form_value']
             menu = form_value[0]
-
         default_data = {'name': name,  # タイトル
                         }
-
         test_form = MenuSearchForm(initial=default_data)  # 検索フォーム
         context['test_form'] = test_form
-
         return context
 
     def get_queryset(self):
-
         # sessionに値がある場合、その値でクエリ発行する。
         if 'form_value' in self.request.session:
             form_value = self.request.session['form_value']
             menu = form_value[0]
-
+            genres = form_value[1]
             # 検索条件
             condition_menu = Q()
-
+            condition_genre = Q()
             if len(menu) != 0 and menu[0]:
                 condition_menu = Q(menu_name__icontains=menu)
-            return Menu.objects.select_related().filter(condition_menu)
+            if len(genres) != 0:
+                condition_genre = Q(menu_genre__in=genres)
+            return Menu.objects.select_related().filter(condition_menu & condition_genre)
         else:
             # 何も返さない
             return Menu.objects.none()

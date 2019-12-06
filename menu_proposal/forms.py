@@ -12,6 +12,10 @@ class MenuSearchForm(forms.Form):
         label='名前',
         required=False
     )
+    condition_genre = forms.ModelMultipleChoiceField(
+        label="好み",
+        queryset=Genres.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
 
 
 class ProposalForm(forms.Form):
