@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from menu_proposal.models import Allergies, Genres, Menu
 
 
-class UserManager(UserManager):
+class _UserManager(UserManager):
     """
     ユーザインスタンスを作成するクラス
     """
@@ -40,7 +40,7 @@ class User(AbstractUser):
     allergy = models.ManyToManyField(Allergies, blank=True, null=True)
     genre = models.ManyToManyField(Genres)
 
-    objects = UserManager()
+    objects = _UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
