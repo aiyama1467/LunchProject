@@ -52,7 +52,18 @@
     {% endfor %}
     </div>
 
-    <a href="{% url 'accounts:delete' %}">アカウント削除</a>
+    <button id="delete_user" class="btn btn-outline-danger" type="button">アカウント削除</button>
+    <script>
+    let btn = document.getElementById('delete_user');
+
+    btn.addEventListener('click', function () {
+        let ret = window.confirm('本当に削除しますか？');
+
+        if(ret) {
+            window.location.href = '{% url 'accounts:delete' %}'
+        }
+    })
+    </script>
 
     {% if user.is_superuser %}
     <ul class="super">
