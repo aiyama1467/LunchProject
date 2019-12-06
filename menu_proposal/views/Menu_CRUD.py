@@ -8,6 +8,7 @@ from django import forms
 from menu_proposal.forms import *
 
 
+
 class MenuCreateView(CreateView):
     model = Menu
     template_name = "Menu/create.html"
@@ -20,6 +21,7 @@ class MenuCreateView(CreateView):
         form.fields['menu_genre'].queryset = Genres.objects
         form.fields['menu_allergies'].widget = forms.CheckboxSelectMultiple()
         form.fields['menu_allergies'].queryset = Allergies.objects
+
         return form
 
     def form_valid(self, form):
@@ -27,7 +29,6 @@ class MenuCreateView(CreateView):
         messages.success(
             self.request, '「{}」を作成しました'.format(form.instance))
         return result
-
 
 class MenuDetailView(DetailView):
     model = Menu
@@ -38,10 +39,11 @@ class MenuListView(ListView):
     model = Menu
     template_name = "Menu/list.html"
     paginate_by = 10
-    def post(self, request, *args, **kwargs):
 
+    def post(self, request, *args, **kwargs):
         form_value = [
             self.request.POST.get('name', None),
+            self.request.POST.getlist('condition_genre')
         ]
         request.session['form_value'] = form_value
         # 検索時にページネーションに関連したエラーを防ぐ
@@ -73,13 +75,55 @@ class MenuListView(ListView):
         if 'form_value' in self.request.session:
             form_value = self.request.session['form_value']
             menu = form_value[0]
+            genres = form_value[1]
+
+            print(genres)
 
             # 検索条件
             condition_menu = Q()
+            condition_genres1 = Q()
+            condition_genres2 = Q()
+            condition_genres3 = Q()
+            condition_genres4 = Q()
+            condition_genres5 = Q()
+            condition_genres6 = Q()
+            condition_genres7 = Q()
+            condition_genres8 = Q()
+            condition_genres9 = Q()
+            condition_genres10 = Q()
+            condition_genres11 = Q()
+            condition_genres12 = Q()
 
-            if len(menu) != 0 and menu[0]:
+            if len(menu) != 0:
                 condition_menu = Q(menu_name__icontains=menu)
-            return Menu.objects.select_related().filter(condition_menu)
+            
+            if len(genres) >= 1:
+                condition_genres1 = Q(menu_genre=genres[0])
+            if len(genres) >= 2:
+                condition_genres2 = Q(menu_genre=genres[1])
+            if len(genres) >= 3:
+                condition_genres3 = Q(menu_genre=genres[2])
+            if len(genres) >= 4:
+                condition_genres4 = Q(menu_genre=genres[3])
+            if len(genres) >= 5:
+                condition_genres5 = Q(menu_genre=genres[4])
+            if len(genres) >= 6:
+                condition_genres6 = Q(menu_genre=genres[5])
+            if len(genres) >= 7:
+                condition_genres7 = Q(menu_genre=genres[6])
+            if len(genres) >= 8:
+                condition_genres8 = Q(menu_genre=genres[7])
+            if len(genres) >= 9:
+                condition_genres9 = Q(menu_genre=genres[8])
+            if len(genres) >= 10:
+                condition_genres10 = Q(menu_genre=genres[9])
+            if len(genres) >= 11:
+                condition_genres11 = Q(menu_genre=genres[10])
+            if len(genres) >= 12:
+                condition_genres12 = Q(menu_genre=genres[11])
+
+            return Menu.objects.select_related().filter(
+                condition_menu & condition_genres1 & condition_genres2 & condition_genres3 & condition_genres4 & condition_genres5 & condition_genres6 & condition_genres7 & condition_genres8 & condition_genres9 & condition_genres10 & condition_genres11 & condition_genres12)
         else:
             # 何も返さない
             return Menu.objects.none()
@@ -90,14 +134,6 @@ class MenuUpdateView(UpdateView):
     template_name = "Menu/update.html"
     fields = '__all__'
     success_url = reverse_lazy('menu_proposal:list')
-
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class=form_class)
-        form.fields['menu_genre'].widget = forms.CheckboxSelectMultiple()
-        form.fields['menu_genre'].queryset = Genres.objects
-        form.fields['menu_allergies'].widget = forms.CheckboxSelectMultiple()
-        form.fields['menu_allergies'].queryset = Allergies.objects
-        return form
 
     def form_valid(self, form):
         result = super().form_valid(form)
