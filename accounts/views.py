@@ -14,7 +14,7 @@ class OnlyYouMixin(UserPassesTestMixin):
     """
     異なるユーザからのアクセスを防ぐアクセス制限
     """
-    raise_exception = True
+    raise_exception = False
 
     def test_func(self):
         user = self.request.user
