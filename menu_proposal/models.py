@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.core.validators import MaxValueValidator, MinValueValidator
 import uuid
 import os
 
@@ -38,15 +39,24 @@ class Menu(models.Model):
 
     menu_name = models.CharField(
         ("名前（Menu name）"), max_length=128, unique=True)
-    menu_value = models.IntegerField(("価格（Price (incl. tax)）"))
-    menu_energy = models.FloatField(("カロリー（Energy）"))
-    menu_carbohydrate = models.FloatField(("炭水化物（Carbohydrates）"))
-    menu_salt_content = models.FloatField(("塩分（Salt）"))
-    menu_lipid = models.FloatField(("脂質（Fat）"))
-    menu_protein = models.FloatField(("タンパク質（Protein）"))
-    menu_red_point = models.FloatField(("赤（Red）"))
-    menu_green_point = models.FloatField(("緑（Green）"))
-    menu_yellow_point = models.FloatField(("黄（Yellow）"))
+    menu_value = models.IntegerField(
+        ("価格（Price (incl. tax)）"), validators=[MinValueValidator(0)])
+    menu_energy = models.FloatField(
+        ("カロリー（Energy）"), validators=[MinValueValidator(0.0)])
+    menu_carbohydrate = models.FloatField(
+        ("炭水化物（Carbohydrates）"), validators=[MinValueValidator(0.0)])
+    menu_salt_content = models.FloatField(
+        ("塩分（Salt）"), validators=[MinValueValidator(0.0)])
+    menu_lipid = models.FloatField(
+        ("脂質（Fat）"), validators=[MinValueValidator(0.0)])
+    menu_protein = models.FloatField(
+        ("タンパク質（Protein）"), validators=[MinValueValidator(0.0)])
+    menu_red_point = models.FloatField(
+        ("赤（Red）"), validators=[MinValueValidator(0.0)])
+    menu_green_point = models.FloatField(
+        ("緑（Green）"), validators=[MinValueValidator(0.0)])
+    menu_yellow_point = models.FloatField(
+        ("黄（Yellow）"), validators=[MinValueValidator(0.0)])
     menu_picture = models.ImageField(
         ("画像（Image）"), upload_to=get_file_path, height_field=None, width_field=None, max_length=None, null=True, blank=True)
     menu_genre = models.ManyToManyField(Genres, verbose_name=("ジャンル（Genre）"))
