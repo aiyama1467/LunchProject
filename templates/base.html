@@ -42,7 +42,7 @@
 
 {% if user.is_authenticated %}
 <li><a href="{% url 'logout' %}" class="logout">ログアウト<span>Logout</span></a></li>
-    <li><a href="{% url 'accounts:my_page' pk=user.pk %}" class="logout">会員情報<span>User Menu</span></a></li>
+    <li><a href="{% url 'accounts:my_page' %}" class="logout">会員情報<span>User Menu</span></a></li>
 {% else %}
 <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>Signup</span></a></li>
 <li><a href="{% url 'login' %}" class="login">Login</a></li>
@@ -61,7 +61,7 @@
 <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>Signup</span></a></li>
 {% if user.is_authenticated %}
 <li><a href="{% url 'logout' %}" class="logout">ログアウト<span>Logout</span></a></li>
-    <li><a href="{% url 'accounts:my_page' pk=user.pk %}" class="logout">会員情報<span>User Menu</span></a></li>
+    <li><a href="{% url 'accounts:my_page' %}" class="logout">会員情報<span>User Menu</span></a></li>
 {% else %}
 <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>Signup</span></a></li>
 <li><a href="{% url 'login' %}" class="login">Login</a></li>

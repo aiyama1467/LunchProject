@@ -42,11 +42,9 @@ class SignUpView(generic.CreateView):
         return render(request, self.template_name, self.context)
 
 
-class UserMyPage(OnlyYouMixin, generic.DetailView):
+class UserMyPage(generic.TemplateView):
     """マイページのView"""
-    model = User
     template_name = 'accounts/user_my_page.html'
-    context_object_name = 'user'
 
     class Data:
         __slots__ = ['energy', 'carbohydrates', 'salt', 'fat', 'protein', 'red', 'green', 'yellow']
@@ -78,6 +76,8 @@ class UserMyPage(OnlyYouMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        context['user'] = User.objects.get(id=self.request.user.id)
 
         eat_log = EatLog.objects.filter(user=self.request.user)
         nutrient_shift = OrderedDict()
