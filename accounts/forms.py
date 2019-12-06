@@ -10,6 +10,7 @@ User = get_user_model()
 
 
 class UserCreateForm(UserCreationForm):
+    """ユーザを作成するときのフォーム"""
     allergy = forms.ModelMultipleChoiceField(label="アレルギー", queryset=Allergies.objects.all(),
                                              widget=forms.CheckboxSelectMultiple, required=False)
     genre = forms.ModelMultipleChoiceField(label="好み", queryset=Genres.objects.all(),

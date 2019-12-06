@@ -6,6 +6,9 @@ from menu_proposal.models import Allergies, Genres, Menu
 
 
 class UserManager(UserManager):
+    """
+    ユーザインスタンスを作成するクラス
+    """
     def _create_user(self, email, password, **extra_fields):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
@@ -31,6 +34,7 @@ class UserManager(UserManager):
 
 
 class User(AbstractUser):
+    """ユーザ"""
     username = models.CharField(_('username'), max_length=150, blank=True)
     email = models.EmailField(_('email address'), unique=True)
     allergy = models.ManyToManyField(Allergies, blank=True, null=True)
@@ -43,6 +47,7 @@ class User(AbstractUser):
 
 
 class EatLog(models.Model):
+    """食事の履歴"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     eat_datetime = models.DateField()
     menu = models.ManyToManyField(Menu)
