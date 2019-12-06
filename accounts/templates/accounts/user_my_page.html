@@ -24,14 +24,14 @@
     {% for date, nutrient in nutrient_shift.items %}
         <tr>
             <td>{{ date }}</td>
-            <td>{{ nutrient.energy }}</td>
-            <td>{{ nutrient.carbohydrates }}</td>
-            <td>{{ nutrient.salt }}</td>
-            <td>{{ nutrient.fat }}</td>
-            <td>{{ nutrient.protein }}</td>
-            <td>{{ nutrient.red }}</td>
-            <td>{{ nutrient.green }}</td>
-            <td>{{ nutrient.yellow }}</td>
+            <td>{{ nutrient.energy|floatformat }}</td>
+            <td>{{ nutrient.carbohydrates|floatformat }}</td>
+            <td>{{ nutrient.salt|floatformat }}</td>
+            <td>{{ nutrient.fat|floatformat }}</td>
+            <td>{{ nutrient.protein|floatformat }}</td>
+            <td>{{ nutrient.red|floatformat }}</td>
+            <td>{{ nutrient.green|floatformat }}</td>
+            <td>{{ nutrient.yellow|floatformat }}</td>
         </tr>
     {% endfor %}
     </tbody>
