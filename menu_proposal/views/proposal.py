@@ -41,6 +41,11 @@ class MenuProposalView(FormView):
         return initial
 
     def form_valid(self, form):
+        # 一回当たりの予算が300未満の時
+        if (form.cleaned_data["budget"] / int(form.cleaned_data["time"])) < 300:
+            messages.error(
+                self.request, "予算の値が小さすぎます。食事一回当たりの予算を300円以上にしてください")
+            return super().form_invalid(form)
         # アレルギーリスト
         allergies = []
         for i in form.cleaned_data["allergy"]:
@@ -51,7 +56,7 @@ class MenuProposalView(FormView):
             like_genre.append(i.pk)
         # Menu_Proposalを使いおすすめ献立[menu_list]を求める
         proposal = Menu_Proposal(
-            form.cleaned_data["time"], allergies, form.cleaned_data["budget"], like_genre)
+            int(form.cleaned_data["time"]), allergies, form.cleaned_data["budget"], like_genre)
         menu_list = proposal.propose()
         # おすすめの献立が日数分提案できなかった時メッセージを表示し、入力フォームに戻る
         if len(menu_list) < int(form.cleaned_data["time"]):
@@ -113,6 +118,7 @@ class MenuProposalView(FormView):
         return render(self.request, 'Proposal/proposal_result.html', {"date": date, "form": form, "menu": menu_list, "sum": menu_sum_list, "time": range(int(form.cleaned_data["time"])), "total": result, "unit": unit})
 
     def form_invalid(self, form):
+        messages.error(self.request, "入力に誤りがあります。もう一度正しく入力してください。")
         return super().form_invalid(form)
 
 
@@ -168,8 +174,6 @@ class Menu_Proposal:
 
     def propose(self):
         menu_list = []
-        max_value = 100000.0
-        max_point = -1000
         for staple in self.staplefood:
             if self.budget < self.get_price([staple]):
                 continue
@@ -178,10 +182,10 @@ class Menu_Proposal:
             for i in staple.menu_genre.all():
                 staple_genre.append(i.genre_name)
             for main in self.maindish:
-                if ("ごはん" in staple_genre and main.menu_name is "null") or self.budget < self.get_price([staple, main]):
+                if ("ごはん（Rice）" in staple_genre and main.menu_name is "null") or self.budget < self.get_price([staple, main]):
                     continue
                 for side in self.sidedish:
-                    if ("ごはん" in staple_genre and side.menu_name is "null") or self.budget < self.get_price([staple, main, side]):
+                    if ("ごはん（Rice）" in staple_genre and side.menu_name is "null") or self.budget < self.get_price([staple, main, side]):
                         continue
                     for dessert in self.dessert:
                         if self.budget < self.get_price([staple, main, side, dessert]):
@@ -189,17 +193,20 @@ class Menu_Proposal:
                         for soup in self.soup:
                             # 献立のリスト
                             l = [staple, main, side, dessert, soup]
-                            # nullの削除
-                            l = [s for s in l if s.menu_name != 'null']
                             # 予算オーバーの場合追加しない
                             if self.budget < self.get_price(l):
                                 continue
+                            # nullの削除
+                            l = [s for s in l if s.menu_name != 'null']
                             # 献立の評価 genreの一致率 > menuの栄養
-                            for menu_value in range(min(5, len(menu_list))):
+                            # 上位（提案回数）個リストに保存
+                            add_menu = False
+                            for menu_value in range(min(self.time, len(menu_list))):
                                 point = self.get_point(menu_list[menu_value])
                                 tmp_point = self.get_point(l)
                                 if point < tmp_point:
                                     menu_list.insert(menu_value, l)
+                                    add_menu = True
                                     break
                                 elif point == tmp_point:
                                     value = self.get_value(
@@ -207,9 +214,11 @@ class Menu_Proposal:
                                     cmp_value = self.get_value(l)
                                     if value > cmp_value:
                                         menu_list.insert(menu_value, l)
+                                        add_menu = True
                                         break
-                            if len(menu_list) < 5:
+                            if add_menu:
+                                continue
+                            if len(menu_list) < self.time:
                                 menu_list.append(l)
         menu_list = menu_list[0: self.time]
-
         return menu_list
