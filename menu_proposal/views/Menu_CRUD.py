@@ -42,7 +42,8 @@ class MenuListView(ListView):
     def post(self, request, *args, **kwargs):
         form_value = [
             self.request.POST.get('name', None),
-            self.request.POST.getlist('condition_genre')
+            self.request.POST.getlist('genre'),
+            self.request.POST.getlist('allergy')
         ]
         request.session['form_value'] = form_value
         # 検索時にページネーションに関連したエラーを防ぐ
@@ -69,14 +70,18 @@ class MenuListView(ListView):
             form_value = self.request.session['form_value']
             menu = form_value[0]
             genres = form_value[1]
+            allergies = form_value[2]
             # 検索条件
             condition_menu = Q()
             condition_genre = Q()
+            condition_allergies = Q()
             if len(menu) != 0 and menu[0]:
                 condition_menu = Q(menu_name__icontains=menu)
             if len(genres) != 0:
                 condition_genre = Q(menu_genre__in=genres)
-            return Menu.objects.select_related().filter(condition_menu & condition_genre)
+            if len(allergies) != 0:
+                condition_allergies = ~Q(menu_allergies__in=allergies)
+            return Menu.objects.select_related().filter(condition_menu & condition_genre & condition_allergies)
         else:
             # 何も返さない
             return Menu.objects.none()
