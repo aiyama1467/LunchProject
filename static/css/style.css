@@ -661,5 +661,9 @@ img.fr,img.fl {float: none;margin: 0;width: 100%;}
 
 .selectbox{
   display: inline-block;
-  width: 300px
+  width: 300px;
+}
+
+.super{
+
 }
