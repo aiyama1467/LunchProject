@@ -3,11 +3,12 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth import logout
+from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 
 from collections import OrderedDict
 
 from accounts.models import User, EatLog
-from .forms import UserCreateForm
+from .forms import UserCreateForm, PasswordModifyForm
 
 
 class OnlyYouMixin(UserPassesTestMixin):
@@ -104,5 +105,15 @@ class UserDeleteView(generic.TemplateView):
         else:
             return redirect('menu_proposal:home')
 
+
+class PasswordModifyView(PasswordChangeView):
+    form_class = PasswordModifyForm
+    success_url = reverse_lazy('accounts:password_modify_done')
+    template_name = 'accounts/modify_password.html'
+
+
+class PasswordModifyDoneView(PasswordChangeDoneView):
+    """パスワード変更しました"""
+    template_name = 'accounts/password_modify_done.html'
 
 # Todo: signup, login, logoutのページのレイアウトを調整する
