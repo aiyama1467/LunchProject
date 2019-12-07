@@ -9,15 +9,15 @@ TIME_CHOICE = (
 class MenuSearchForm(forms.Form):
     name = forms.CharField(
         initial='',
-        label='名前',
+        label='名前（Name）',
         required=False
     )
     allergy = forms.ModelMultipleChoiceField(
-        label="アレルギー",
+        label="アレルギー（Allergic substance）",
         queryset=Allergies.objects.all(),
         widget=forms.CheckboxSelectMultiple)
     genre = forms.ModelMultipleChoiceField(
-        label="好み",
+        label="ジャンル（Genre）",
         queryset=Genres.objects.all(),
         widget=forms.CheckboxSelectMultiple)
 
