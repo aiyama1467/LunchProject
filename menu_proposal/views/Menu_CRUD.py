@@ -13,7 +13,7 @@ class MenuCreateView(CreateView):
     model = Menu
     template_name = "Menu/create.html"
     fields = '__all__'
-    success_url = reverse_lazy('menu_proposal:list')
+    success_url = reverse_lazy('menu_proposal:edit')
 
     def dispatch(self, *args, **kwargs):
 
