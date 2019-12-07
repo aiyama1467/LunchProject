@@ -51,7 +51,7 @@
 {% endif %}
 
 <div>
-    <h3>ユーザ情報</h3>
+    <h3>ユーザ情報　<a href="{% url 'accounts:modify_user_info' %}">編集</a></h3>
     <p>email</p>
     {{ user.email }} <br>
     <p>allergy</p>
