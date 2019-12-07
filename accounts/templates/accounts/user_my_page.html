@@ -15,61 +15,79 @@
 
     {% if not user.is_superuser %}
         <h3>食事履歴</h3>
-        {% for date, nutrient in nutrient_shift.items %}
-            <fieldset>
-                <legend>
-                    {{ date }}
-                </legend>
-                <div>
-                    <ul>
-                        {% for name in nutrient.menu %}
-                            <li>{{ name }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <hr>
-                <div>
-                    <table>
-                        <tr>
-                            <td>値段(税込み)</td>
-                            <td>{{ nutrient.price|floatformat:0 }} 円</td>
-                        </tr>
-                        <tr>
-                            <td>カロリー</td>
-                            <td>{{ nutrient.energy|floatformat }} kcal</td>
-                        </tr>
-                        <tr>
-                            <td>炭水化物</td>
-                            <td>{{ nutrient.carbohydrates|floatformat }} g</td>
-                        </tr>
-                        <tr>
-                            <td>塩分</td>
-                            <td>{{ nutrient.salt|floatformat }} g</td>
-                        </tr>
-                        <tr>
-                            <td>脂質</td>
-                            <td>{{ nutrient.fat|floatformat }} g</td>
-                        </tr>
-                        <tr>
-                            <td>タンパク質</td>
-                            <td>{{ nutrient.protein|floatformat }} g</td>
-                        </tr>
-                        <tr>
-                            <td>赤</td>
-                            <td>{{ nutrient.red|floatformat }}</td>
-                        </tr>
-                        <tr>
-                            <td>緑</td>
-                            <td>{{ nutrient.green|floatformat }}</td>
-                        </tr>
-                        <tr>
-                            <td>黄</td>
-                            <td>{{ nutrient.yellow|floatformat }}</td>
-                        </tr>
-                    </table>
-                </div>
-            </fieldset>
-        {% endfor %}
+        <dl id="acMenu">
+            {% for date, nutrient in nutrient_shift.items %}
+                <dt><span class="date">{{ date }}</span></dt>
+                <dd>
+                    <fieldset>
+                        <div>
+                            <ul>
+                                {% for name in nutrient.menu %}
+                                    <li>{{ name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <hr>
+                        <div>
+                            <table>
+                                <tr>
+                                    <td>値段(税込み)</td>
+                                    <td>{{ nutrient.price|floatformat:0 }} 円</td>
+                                </tr>
+                                <tr>
+                                    <td>カロリー</td>
+                                    <td>{{ nutrient.energy|floatformat }} kcal</td>
+                                </tr>
+                                <tr>
+                                    <td>炭水化物</td>
+                                    <td>{{ nutrient.carbohydrates|floatformat }} g</td>
+                                </tr>
+                                <tr>
+                                    <td>塩分</td>
+                                    <td>{{ nutrient.salt|floatformat }} g</td>
+                                </tr>
+                                <tr>
+                                    <td>脂質</td>
+                                    <td>{{ nutrient.fat|floatformat }} g</td>
+                                </tr>
+                                <tr>
+                                    <td>タンパク質</td>
+                                    <td>{{ nutrient.protein|floatformat }} g</td>
+                                </tr>
+                                <tr>
+                                    <td>赤</td>
+                                    <td>{{ nutrient.red|floatformat }}</td>
+                                </tr>
+                                <tr>
+                                    <td>緑</td>
+                                    <td>{{ nutrient.green|floatformat }}</td>
+                                </tr>
+                                <tr>
+                                    <td>黄</td>
+                                    <td>{{ nutrient.yellow|floatformat }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </fieldset>
+                </dd>
+            {% endfor %}
+        </dl>
+        <script>
+            $("#acMenu dt").on("click", function () {
+                $(this).next().slideToggle();
+            });
+        </script>
+        <style>
+        dl dd {
+            display: none;
+        }
+
+        .date:hover {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #FFFFFF;
+        }
+        </style>
     {% endif %}
 
     <section>
@@ -116,3 +134,9 @@
     {% endif %}
 
 {% endblock %}
+
+
+
+
+
+

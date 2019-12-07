@@ -91,7 +91,7 @@ class UserMyPage(generic.TemplateView):
         nutrient_shift = OrderedDict()
 
         for log in eat_log:
-            if log.eat_datetime not in nutrient_shift.keys():
+            if log.eat_datetime.isoformat() not in nutrient_shift.keys():
                 nutrient_shift[log.eat_datetime.isoformat()] = self.Data()
 
             for m in log.menu.all():
