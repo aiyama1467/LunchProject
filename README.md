@@ -14,5 +14,7 @@ $ python init_database.py
 $ sqlite3 db.sqlite3
 sqlite> .separator ,
 sqlite> .import output.csv menu_proposal_menu
+sqlite> .import menu_genre.csv menu_proposal_menu_menu_genre
+sqlite> .import menu_allergy.csv menu_proposal_menu_menu_allergies
 sqlite> .quit
 ```
