@@ -6,6 +6,7 @@ from django.db.models import Q
 from menu_proposal.models import *
 from django import forms
 from menu_proposal.forms import *
+from django.core.exceptions import PermissionDenied
 
 
 class MenuCreateView(CreateView):
@@ -13,6 +14,12 @@ class MenuCreateView(CreateView):
     template_name = "Menu/create.html"
     fields = '__all__'
     success_url = reverse_lazy('menu_proposal:list')
+
+    def dispatch(self, *args, **kwargs):
+
+        if not self.request.user.is_superuser:
+            raise PermissionDenied
+        return super().dispatch(self.request, *args, **kwargs)
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
@@ -92,6 +99,12 @@ class MenuEditView(ListView):
     template_name = "Menu/superuserlist.html"
     paginate_by = 10
 
+    def dispatch(self, *args, **kwargs):
+
+        if not self.request.user.is_superuser:
+            raise PermissionDenied
+        return super().dispatch(self.request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         form_value = [
             self.request.POST.get('name', None),
@@ -146,6 +159,12 @@ class MenuUpdateView(UpdateView):
     fields = '__all__'
     success_url = reverse_lazy('menu_proposal:edit')
 
+    def dispatch(self, *args, **kwargs):
+
+        if not self.request.user.is_superuser:
+            raise PermissionDenied
+        return super().dispatch(self.request, *args, **kwargs)
+
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
         form.fields['menu_genre'].widget = forms.CheckboxSelectMultiple()
@@ -165,6 +184,11 @@ class MenuDeleteView(DeleteView):
     model = Menu
     template_name = "Menu/delete.html"
     success_url = reverse_lazy('menu_proposal:edit')
+
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_superuser:
+            raise PermissionDenied
+        return super().dispatch(self.request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         result = super().delete(request, *args, **kwargs)
