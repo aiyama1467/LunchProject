@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +11,7 @@
     <meta name="description" content="ここにサイト説明を入れます">
     <meta name="keywords" content="キーワード１,キーワード２,キーワード３,キーワード４,キーワード５">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-        <link rel="stylesheet" href="{% static 'css/slide.css' %}">
+    <link rel="stylesheet" href="{% static 'css/slide.css' %}">
     <script type="text/javascript" src="{% static 'script/openclose.js' %}"></script>
     <script type="text/javascript" src="{% static 'script/fixmenu_pagetop.js' %}"></script>
     <!--[if lt IE 9]>
@@ -22,115 +23,113 @@
 
 <body>
 
-<header>
-    <div class="inner">
-    <h1 id="logo"><img src="{% static 'img/logo.png' %}"></h1>
-    <div id="contact">
-    </div>
-    </div>
-</header>
+    <header>
+        <div class="inner">
+            <h1 id="logo"><a href="/"><img src="{% static 'img/logo.png' %}"></a></h1>
+            <div id="contact">
+            </div>
+        </div>
+    </header>
 
-<!--PC用（801px以上端末）メニュー-->
-<nav id="menubar">
-    <ul class="inner">
-        <li><a href="/">ホーム<span>HOME</span></a></li>
-        <li><a href={% url 'menu_proposal:list' %} class="act">メニュー<span>MENU</span></a></li>
-        <li><a href={% url 'menu_proposal:proposal' %} class="act">献立提案<span>PROPOSAL</span></a></li>
-
-        {% if user.is_authenticated %}
-        <li><a href="{% url 'logout' %}" class="logout">ログアウト<span>Logout</span></a></li>
+    <!--PC用（801px以上端末）メニュー-->
+    <nav id="menubar">
+        <ul class="inner">
+            <li><a href="/">ホーム<span>HOME</span></a></li>
+            {% if user.is_superuser %}
+            <li><a href={% url 'menu_proposal:edit' %} class="act">メニュー修正・削除 <span>MENUEDIT</span></a></li>
+            <li><a href={% url 'menu_proposal:add' %} class="act">メニューの追加<span>MenuAdd</span></a></li>
+            {% else %}
+            <li><a href={% url 'menu_proposal:list' %} class="act">メニュー<span>SERVICE</span></a></li>
+            <li><a href={% url 'menu_proposal:proposal' %} class="act">献立提案<span>RECRUIT</span></a></li>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}" class="logout">ログアウト<span>Logout</span></a></li>
             <li><a href="{% url 'accounts:my_page' %}" class="info">会員情報<span>User Menu</span></a></li>
-        {% else %}
-        <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>SIGNUP</span></a></li>
-        <li><a href="{% url 'login' %}" class="login">ログイン<span>LOGIN</span></a></li>
-        {% endif %}
-    </ul>
-</nav>
-<!--小さな端末用（800px以下端末）メニュー-->
-<nav id="menubar-s">
-    <ul>
-        <li><a>ホーム<span>HOME</span></a></li>
-        <li><a href={% url 'menu_proposal:list' %} class="act">メニュー<span>SERVICE</span></a></li>
-        <li><a href={% url 'menu_proposal:proposal' %} class="act">献立提案<span>RECRUIT</span></a></li>
-
-        <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>Signup</span></a></li>
-        {% if user.is_authenticated %}
-        <li><a href="{% url 'logout' %}" class="logout">ログアウト<span>Logout</span></a></li>
+            {% else %}
+            <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>SIGNUP</span></a></li>
+            <li><a href="{% url 'login' %}" class="login">ログイン<span>LOGIN</span></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <!--小さな端末用（800px以下端末）メニュー-->
+    <nav id="menubar-s">
+        <ul>
+            <li><a href="/">ホーム<span>HOME</span></a></li>
+            {% if user.is_superuser %}
+            <li><a href={% url 'menu_proposal:edit' %} class="act">メニューの削除修正 <span>MENUEDIT</span></a></li>
+            <li><a href={% url 'menu_proposal:add' %} class="act">メニューの追加<span>MenuAdd</span></a></li>
+            {% else %}
+            <li><a href={% url 'menu_proposal:list' %} class="act">メニュー<span>SERVICE</span></a></li>
+            <li><a href={% url 'menu_proposal:proposal' %} class="act">献立提案<span>RECRUIT</span></a></li>
+            {% endif %}
+            <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>Signup</span></a></li>
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}" class="logout">ログアウト<span>Logout</span></a></li>
             <li><a href="{% url 'accounts:my_page' %}" class="info">会員情報<span>User Menu</span></a></li>
-        {% else %}
-        <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>Signup</span></a></li>
-        <li><a href="{% url 'login' %}" class="login">ログイン<span>LOGIN</span></a></li>
-        {% endif %}
-    </ul>
-</nav>
+            {% else %}
+            <li><a href="{% url 'accounts:signup' %}" class="signup">会員登録<span>Signup</span></a></li>
+            <li><a href="{% url 'login' %}" class="login">ログイン<span>LOGIN</span></a></li>
+            {% endif %}
+        </ul>
+    </nav>
 
-<div id="contents" class="inner">
-    <div id="contents-in">
-        <div id="main">
+    <div id="contents" class="inner">
+        <div id="contents-in">
+            <div id="main">
 
-            <section>
-                <div class="content">
-                    {% if messages %}
+                <section>
+                    <div class="content">
+                        {% if messages %}
                         <div>
                             {% for message in messages %}
                             <p> {{ message }}</p>
                             {% endfor %}
                         </div>
-                    {% endif %}
-                    {% block content %}
-                    {% endblock %}
-                </div>
-            </section>
-        </div>
-        <!--/#main-->
-
-        <div id="sub">
-            <div class="box1">
-                <li><a>ホーム<span>HOME</span></a></li>
-                <li><a>ログイン<span>COMPANY</span></a></li>
-                <li><a>メニュー<span>SERVICE</span></a></li>
-                <li><a>献立提案<span>RECRUIT</span></a></li>
-                <li><a>ユーザ情報<span>STAFF</span></a></li>
-                <li><a>会員登録<span>CONTACT</span></a></li>
+                        {% endif %}
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                </section>
             </div>
+            <!--/#main-->
+
+
+            <div id="side">
+            </div>
+            <!--/#side-->
         </div>
-        <!--/#sub-->
+        <!--/#contents-in-->
+    </div>
+    <!--/#contents-->
 
-        <div id="side">
+    <footer>
+        <!--/footermenu-->
+
+        <div id="copyright">
+            <small>Copyright&copy; <a href="index.html">SAMPLE COMPANY</a> All Rights Reserved.</small>
+            <span class="pr"><a href="http://template-party.com/" target="_blank">《Web Design:Template-Party》</a></span>
         </div>
-        <!--/#side-->
-    </div>
-    <!--/#contents-in-->
-</div>
-<!--/#contents-->
 
-<footer>
-<!--/footermenu-->
+    </footer>
 
-    <div id="copyright">
-        <small>Copyright&copy; <a href="index.html">SAMPLE COMPANY</a> All Rights Reserved.</small>
-        <span class="pr"><a href="http://template-party.com/" target="_blank">《Web Design:Template-Party》</a></span>
-    </div>
+    <p class="nav-fix-pos-pagetop"><a href="#">↑</a></p>
 
-</footer>
+    <!--小さな端末用（800px以下端末）メニュー-->
+    <script type="text/javascript">
+        if (OCwindowWidth() <= 800) {
+            open_close("newinfo_hdr", "newinfo");
+        }
+    </script>
 
-<p class="nav-fix-pos-pagetop"><a href="#">↑</a></p>
-
-<!--小さな端末用（800px以下端末）メニュー-->
-<script type="text/javascript">
-if (OCwindowWidth() <= 800) {
-	open_close("newinfo_hdr", "newinfo");
-}
-</script>
-
-<!--メニュー開閉ボタン-->
-<div id="menubar_hdr" class="close"></div>
-<!--メニューの開閉処理条件設定　800px以下-->
-<script type="text/javascript">
-if (OCwindowWidth() <= 800) {
-	open_close("menubar_hdr", "menubar-s");
-}
-</script>
+    <!--メニュー開閉ボタン-->
+    <div id="menubar_hdr" class="close"></div>
+    <!--メニューの開閉処理条件設定　800px以下-->
+    <script type="text/javascript">
+        if (OCwindowWidth() <= 800) {
+            open_close("menubar_hdr", "menubar-s");
+        }
+    </script>
 
 </body>
+
 </html>
