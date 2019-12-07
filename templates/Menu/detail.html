@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if user.is_superuser %}
+<a href={% url 'menu_proposal:edit' %}>一覧に戻る</a>
+{% else %}
 <a href={% url 'menu_proposal:list' %}>一覧に戻る</a>
+{% endif %}
+
 <h3>{{menu.menu_name}}</h3>
 {% if menu.menu_picture %}
 <th>画像：<br><img src="{{ menu.menu_picture.url }}" width="50%" height="50%" /></th>
