@@ -1,75 +1,83 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>User Information</h1>
+<h2>会員情報</h2>
 
-    <div>
-    <h2>食事履歴</h2>
+{% if user.is_superuser %}
+<h3>
+    メニューの管理
+</h3>
+<ul class="super">
+    <li><a href={% url 'menu_proposal:edit' %} class="act">メニューの削除修正 <span>MENU</span></a></li>
+    <li><a href={% url 'menu_proposal:add' %} class="act">メニューの追加<span>MenuAdd</span></a></li>
+</ul>
+{% endif %}
+
+{% if not user.is_superuser %}
+<div>
+    <h3>食事履歴</h3>
     <table>
-    <thead>
-    <tr>
-        <th>食事日</th>
-        <th>メニュー</th>
-        <th>カロリー</th>
-        <th>炭水化物</th>
-        <th>塩分</th>
-        <th>脂質</th>
-        <th>タンパク質</th>
-        <th>赤</th>
-        <th>緑</th>
-        <th>黄</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for date, nutrient in nutrient_shift.items %}
-        <tr>
-            <td>{{ date }}</td>
-            <td>{{ nutrient.energy|floatformat }}</td>
-            <td>{{ nutrient.carbohydrates|floatformat }}</td>
-            <td>{{ nutrient.salt|floatformat }}</td>
-            <td>{{ nutrient.fat|floatformat }}</td>
-            <td>{{ nutrient.protein|floatformat }}</td>
-            <td>{{ nutrient.red|floatformat }}</td>
-            <td>{{ nutrient.green|floatformat }}</td>
-            <td>{{ nutrient.yellow|floatformat }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
+        <thead>
+            <tr>
+                <th>食事日</th>
+                <th>メニュー</th>
+                <th>カロリー</th>
+                <th>炭水化物</th>
+                <th>塩分</th>
+                <th>脂質</th>
+                <th>タンパク質</th>
+                <th>赤</th>
+                <th>緑</th>
+                <th>黄</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for date, nutrient in nutrient_shift.items %}
+            <tr>
+                <td>{{ date }}</td>
+                <td>{{ nutrient.energy|floatformat }}</td>
+                <td>{{ nutrient.carbohydrates|floatformat }}</td>
+                <td>{{ nutrient.salt|floatformat }}</td>
+                <td>{{ nutrient.fat|floatformat }}</td>
+                <td>{{ nutrient.protein|floatformat }}</td>
+                <td>{{ nutrient.red|floatformat }}</td>
+                <td>{{ nutrient.green|floatformat }}</td>
+                <td>{{ nutrient.yellow|floatformat }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
-    </div>
+</div>
+{% endif %}
 
-    <div>
-    <h2>ユーザ情報</h2>
+<div>
+    <h3>ユーザ情報</h3>
     <p>email</p>
     {{ user.email }} <br>
     <p>allergy</p>
     {% for allelgy in user.allergy.all %}
-        {{ allelgy.allergy_name }}
+    {{ allelgy.allergy_name }}
     {% endfor %}
     <p>genre</p>
     {% for genre in user.genre.all %}
-        {{ genre.genre_name }}
+    {{ genre.genre_name }}
     {% endfor %}
-    </div>
-
-    <button id="delete_user" class="btn btn-outline-danger" type="button">アカウント削除</button>
-    <script>
+</div>
+{% if not user.is_superuser %}
+<button id="delete_user" class="btn btn-outline-danger" type="button">アカウント削除</button>
+<script>
     let btn = document.getElementById('delete_user');
 
     btn.addEventListener('click', function () {
         let ret = window.confirm('本当に削除しますか？');
 
-        if(ret) {
-            window.location.href = '{% url 'accounts:delete' %}'
+        if (ret) {
+            window.location.href = '{% url '
+            accounts: delete ' %}'
         }
     })
-    </script>
+</script>
+{% endif %}
 
-    {% if user.is_superuser %}
-    <ul class="super">
-        <li><a href={% url 'menu_proposal:list' %} class="act">メニューの削除修正 <span>MENU</span></a></li>
-        <li><a href={% url 'menu_proposal:add' %} class="act">メニューの追加<span>MenuAdd</span></a></li>
-    </ul>
-    {%endif%}
 
 {% endblock %}

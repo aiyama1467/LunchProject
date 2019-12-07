@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>メニューリスト</h2>
+<h2>メニューの修正削除</h2>
 <h1>検索条件</h1>
 <form method="post">
     {% csrf_token %}
@@ -14,8 +14,17 @@
 </form>
 <h1>検索結果</h1>
 {% for menu in menu_list %}
-
-<a href={% url 'menu_proposal:detail' pk=menu.id %}>{{menu.menu_name}}</a>
+<tr>
+    <th>
+        <a href={% url 'menu_proposal:detail' pk=menu.id %}>{{menu.menu_name}}</a>
+    </th>
+    <th>
+        <a class="btn btn-primary" href="{% url 'menu_proposal:update' menu.pk %}">修正</a>
+    </th>
+    <th>
+        <a class="btn btn-danger" href="{% url 'menu_proposal:delete' menu.pk %}">削除</a>
+    </th>
+</tr>
 <br>
 {% endfor %}
 <!--ページ送り-->
