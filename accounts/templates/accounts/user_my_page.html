@@ -63,6 +63,9 @@
     {{ genre.genre_name }}
     {% endfor %}
 </div>
+
+<a href="{% url 'accounts:password_modify' %}">パスワード変更</a> <br>
+
 {% if not user.is_superuser %}
 <button id="delete_user" class="btn btn-outline-danger" type="button">アカウント削除</button>
 <script>
@@ -78,6 +81,5 @@
     })
 </script>
 {% endif %}
-
 
 {% endblock %}
