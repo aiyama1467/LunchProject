@@ -1,84 +1,118 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>会員情報</h2>
+    <h2>会員情報</h2>
 
-{% if user.is_superuser %}
-<h3>
-    メニューの管理
-</h3>
-<ul class="super">
-    <li><a href={% url 'menu_proposal:edit' %} class="act">メニューの削除修正 <span>MENU</span></a></li>
-    <li><a href={% url 'menu_proposal:add' %} class="act">メニューの追加<span>MenuAdd</span></a></li>
-</ul>
-{% endif %}
+    {% if user.is_superuser %}
+        <h3>
+            メニューの管理
+        </h3>
+        <ul class="super">
+            <li><a href={% url 'menu_proposal:edit' %} class="act">メニューの削除修正 <span>MENU</span></a></li>
+            <li><a href={% url 'menu_proposal:add' %} class="act">メニューの追加<span>MenuAdd</span></a></li>
+        </ul>
+    {% endif %}
 
-{% if not user.is_superuser %}
-<div>
-    <h3>食事履歴</h3>
-    <table>
-        <thead>
+    {% if not user.is_superuser %}
+        <h3>食事履歴</h3>
+        {% for date, nutrient in nutrient_shift.items %}
+            <fieldset>
+                <legend>
+                    {{ date }}
+                </legend>
+                <div>
+                    <ul>
+                        {% for name in nutrient.menu %}
+                            <li>{{ name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <hr>
+                <div>
+                    <table>
+                        <tr>
+                            <td>値段(税込み)</td>
+                            <td>{{ nutrient.price|floatformat:0 }} 円</td>
+                        </tr>
+                        <tr>
+                            <td>カロリー</td>
+                            <td>{{ nutrient.energy|floatformat }} kcal</td>
+                        </tr>
+                        <tr>
+                            <td>炭水化物</td>
+                            <td>{{ nutrient.carbohydrates|floatformat }} g</td>
+                        </tr>
+                        <tr>
+                            <td>塩分</td>
+                            <td>{{ nutrient.salt|floatformat }} g</td>
+                        </tr>
+                        <tr>
+                            <td>脂質</td>
+                            <td>{{ nutrient.fat|floatformat }} g</td>
+                        </tr>
+                        <tr>
+                            <td>タンパク質</td>
+                            <td>{{ nutrient.protein|floatformat }} g</td>
+                        </tr>
+                        <tr>
+                            <td>赤</td>
+                            <td>{{ nutrient.red|floatformat }}</td>
+                        </tr>
+                        <tr>
+                            <td>緑</td>
+                            <td>{{ nutrient.green|floatformat }}</td>
+                        </tr>
+                        <tr>
+                            <td>黄</td>
+                            <td>{{ nutrient.yellow|floatformat }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        {% endfor %}
+    {% endif %}
+
+    <section>
+        <h3>ユーザ情報　<a href="{% url 'accounts:modify_user_info' %}">編集</a></h3>
+        <table border="3">
             <tr>
-                <th>食事日</th>
-                <th>メニュー</th>
-                <th>カロリー</th>
-                <th>炭水化物</th>
-                <th>塩分</th>
-                <th>脂質</th>
-                <th>タンパク質</th>
-                <th>赤</th>
-                <th>緑</th>
-                <th>黄</th>
+                <td>メールアドレス</td>
+                <td>{{ user.email }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for date, nutrient in nutrient_shift.items %}
             <tr>
-                <td>{{ date }}</td>
-                <td>{{ nutrient.energy|floatformat }}</td>
-                <td>{{ nutrient.carbohydrates|floatformat }}</td>
-                <td>{{ nutrient.salt|floatformat }}</td>
-                <td>{{ nutrient.fat|floatformat }}</td>
-                <td>{{ nutrient.protein|floatformat }}</td>
-                <td>{{ nutrient.red|floatformat }}</td>
-                <td>{{ nutrient.green|floatformat }}</td>
-                <td>{{ nutrient.yellow|floatformat }}</td>
+                <td>アレルギー</td>
+                <td>
+                    {% for allelgy in user.allergy.all %}
+                        {{ allelgy.allergy_name }}
+                    {% endfor %}
+                </td>
             </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endif %}
+            <tr>
+                <td>好みのジャンル</td>
+                <td>
+                    {% for genre in user.genre.all %}
+                        {{ genre.genre_name }}
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+    </section>
 
-<div>
-    <h3>ユーザ情報　<a href="{% url 'accounts:modify_user_info' %}">編集</a></h3>
-    <p>email</p>
-    {{ user.email }} <br>
-    <p>allergy</p>
-    {% for allelgy in user.allergy.all %}
-    {{ allelgy.allergy_name }}
-    {% endfor %}
-    <p>genre</p>
-    {% for genre in user.genre.all %}
-    {{ genre.genre_name }}
-    {% endfor %}
-</div>
+    <a href="{% url 'accounts:password_modify' %}">パスワード変更</a> <br>
 
-<a href="{% url 'accounts:password_modify' %}">パスワード変更</a> <br>
+    {% if not user.is_superuser %}
+        <button id="delete_user" class="btn btn-outline-danger" type="button">アカウント削除</button>
+        <script>
+            let btn = document.getElementById('delete_user');
 
-{% if not user.is_superuser %}
-<button id="delete_user" class="btn btn-outline-danger" type="button">アカウント削除</button>
-<script>
-    let btn = document.getElementById('delete_user');
+            btn.addEventListener('click', function () {
+                let ret = window.confirm('本当に削除しますか？');
 
-    btn.addEventListener('click', function () {
-        let ret = window.confirm('本当に削除しますか？');
-
-        if (ret) {
-            window.location.href = '{% url 'accounts:delete' %}'
-        }
-    })
-</script>
-{% endif %}
+                if (ret) {
+                    window.location.href = '{% url 'accounts:delete' %}'
+                }
+            })
+        </script>
+    {% endif %}
 
 {% endblock %}

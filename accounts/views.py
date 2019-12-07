@@ -48,10 +48,14 @@ class UserMyPage(generic.TemplateView):
     template_name = 'accounts/user_my_page.html'
 
     class Data:
-        __slots__ = ['energy', 'carbohydrates', 'salt', 'fat', 'protein', 'red', 'green', 'yellow']
+        __slots__ = ['tax_rate', 'menu', 'price', 'energy', 'carbohydrates', 'salt', 'fat', 'protein', 'red', 'green', 'yellow']
 
         def __init__(self, menu=None):
+            self.tax_rate = 1.1
+
             if menu is not None:
+                self.menu = [menu.menu_name]
+                self.price = menu.menu_value * self.tax_rate
                 self.energy = menu.menu_energy
                 self.carbohydrates = menu.menu_carbohydrate
                 self.salt = menu.menu_salt_content
@@ -61,9 +65,12 @@ class UserMyPage(generic.TemplateView):
                 self.green = menu.menu_green_point
                 self.yellow = menu.menu_yellow_point
             else:
-                self.energy = self.carbohydrates = self.salt = self.fat = self.protein = self.red = self.green = self.yellow = 0
+                self.menu = list()
+                self.price = self.energy = self.carbohydrates = self.salt = self.fat = self.protein = self.red = self.green = self.yellow = 0
 
         def __add__(self, other):
+            self.menu += other.menu
+            self.price += other.price
             self.energy += other.energy
             self.carbohydrates += other.carbohydrates
             self.salt += other.salt
