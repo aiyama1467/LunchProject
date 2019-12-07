@@ -52,6 +52,13 @@
     {% endfor %}
     </div>
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+    <a href="{% url 'accounts:delete' %}">アカウント削除</a>
+=======
+    <a href="{% url 'accounts:password_modify' %}">パスワード変更</a> <br>
+>>>>>>> Stashed changes
     <button id="delete_user" class="btn btn-outline-danger" type="button">アカウント削除</button>
     <script>
     let btn = document.getElementById('delete_user');
@@ -64,6 +71,10 @@
         }
     })
     </script>
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
     {% if user.is_superuser %}
     <ul class="super">
