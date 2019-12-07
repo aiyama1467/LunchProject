@@ -43,7 +43,7 @@ class MenuListView(ListView):
         form_value = [
             self.request.POST.get('name', None),
             self.request.POST.getlist('genre'),
-            self.request.POST.getlist('allergy')
+            self.request.POST.getlist('allergy'),
         ]
         request.session['form_value'] = form_value
         # 検索時にページネーションに関連したエラーを防ぐ
@@ -144,7 +144,7 @@ class MenuUpdateView(UpdateView):
     model = Menu
     template_name = "Menu/update.html"
     fields = '__all__'
-    success_url = reverse_lazy('menu_proposal:list')
+    success_url = reverse_lazy('menu_proposal:edit')
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class=form_class)
@@ -164,7 +164,7 @@ class MenuUpdateView(UpdateView):
 class MenuDeleteView(DeleteView):
     model = Menu
     template_name = "Menu/delete.html"
-    success_url = reverse_lazy('menu_proposal:list')
+    success_url = reverse_lazy('menu_proposal:edit')
 
     def delete(self, request, *args, **kwargs):
         result = super().delete(request, *args, **kwargs)

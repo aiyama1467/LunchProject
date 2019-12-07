@@ -7,7 +7,12 @@
     {% csrf_token %}
     {% for field in test_form %}
     <label>{{field.label}}:</label>
-    {{field}}
+    <br>
+    {% for i in field %}
+    <label class="selectbox">
+        {{i}}
+    </label>
+    {% endfor %}
     <br>
     {% endfor %}
     <input type="submit" id="button" name="button" value="検索">
