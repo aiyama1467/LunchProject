@@ -17,6 +17,7 @@ class UserCreateForm(UserCreationForm):
                                            widget=forms.CheckboxSelectMultiple)
 
     """ユーザー登録用フォーム"""
+
     class Meta:
         model = User
         fields = ('email', 'password1', 'password2', 'allergy', 'genre')
@@ -46,3 +47,15 @@ class PasswordModifyForm(PasswordChangeForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
+
+
+class ModifyUserInfoForm(forms.ModelForm):
+    email = forms.CharField(label='email', required=True)
+    allergy = forms.ModelMultipleChoiceField(label="アレルギー", queryset=Allergies.objects.all(),
+                                             widget=forms.CheckboxSelectMultiple, required=False)
+    genre = forms.ModelMultipleChoiceField(label="好み", queryset=Genres.objects.all(),
+                                           widget=forms.CheckboxSelectMultiple)
+
+    class Meta:
+        model = User
+        fields = ['email', 'allergy', 'genre']

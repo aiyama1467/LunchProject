@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
@@ -8,7 +8,7 @@ from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 from collections import OrderedDict
 
 from accounts.models import User, EatLog
-from .forms import UserCreateForm, PasswordModifyForm
+from .forms import UserCreateForm, PasswordModifyForm, ModifyUserInfoForm
 
 
 class OnlyYouMixin(UserPassesTestMixin):
@@ -115,5 +115,37 @@ class PasswordModifyView(PasswordChangeView):
 class PasswordModifyDoneView(PasswordChangeDoneView):
     """パスワード変更しました"""
     template_name = 'accounts/password_modify_done.html'
+
+
+class ModifyUserInfoView(LoginRequiredMixin, generic.FormView):
+    form_class = ModifyUserInfoForm
+    template_name = 'accounts/modify_user_info.html'
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+
+        return redirect('accounts:my_page')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        user = self.request.user
+
+        initial['email'] = user.email
+
+        # 好みのジャンルの初期値の設定
+        genre = []
+        for g in user.genre.all():
+            genre.append(g.pk)
+        initial['genre'] = genre
+        # アレルギーの初期値の設定
+        allergy = []
+        for a in user.allergy.all():
+            allergy.append(a.pk)
+        initial['allergy'] = allergy
+
+        return initial
 
 # Todo: signup, login, logoutのページのレイアウトを調整する
