@@ -18,9 +18,16 @@
     <hr>
     <div>
         {% for key, value in sum|get_items:i %}
-        {{key}}:
-        {{value|floatformat:-1}}{{unit|index:forloop.counter0}}
-        <br>
+        <table>
+            <tr>
+                <th width="300">
+                    {{key}}
+                </th>
+                <th>
+                    {{value|floatformat:-1}}{{unit|index:forloop.counter0}}
+                </th>
+            </tr>
+        </table>
         {% endfor %}
     </div>
 </fieldset>

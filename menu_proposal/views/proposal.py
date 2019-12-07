@@ -160,7 +160,8 @@ class Menu_Proposal:
         for i in menu:
             vec += ([i.menu_red_point,
                      i.menu_green_point, i.menu_yellow_point])
-            vec /= vec[1]
+            if vec[1] != 0.0:
+                vec /= vec[1]
             cmp_value = np.linalg.norm(vec_tmp - vec)
         return cmp_value
 
