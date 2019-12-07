@@ -2,6 +2,7 @@
 
 {% block content %}
 <h2>メニュー修正</h2>
+<a href={% url 'menu_proposal:edit' %}>一覧に戻る</a>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <table>
@@ -9,4 +10,5 @@
     </table>
     <input type="submit"><br>
 </form>
+
 {% endblock content %}

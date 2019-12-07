@@ -87,6 +87,59 @@ class MenuListView(ListView):
             return Menu.objects.none()
 
 
+class MenuEditView(ListView):
+    model = Menu
+    template_name = "Menu/superuserlist.html"
+    paginate_by = 10
+
+    def post(self, request, *args, **kwargs):
+        form_value = [
+            self.request.POST.get('name', None),
+            self.request.POST.getlist('genre'),
+            self.request.POST.getlist('allergy')
+        ]
+        request.session['form_value'] = form_value
+        # 検索時にページネーションに関連したエラーを防ぐ
+        self.request.GET = self.request.GET.copy()
+        self.request.GET.clear()
+        return self.get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # sessionに値がある場合、その値をセットする。（ページングしてもform値が変わらないように）
+        name = ''
+        if 'form_value' in self.request.session:
+            form_value = self.request.session['form_value']
+            menu = form_value[0]
+        default_data = {'name': name,  # タイトル
+                        }
+        test_form = MenuSearchForm(initial=default_data)  # 検索フォーム
+        context['test_form'] = test_form
+        return context
+
+    def get_queryset(self):
+        # sessionに値がある場合、その値でクエリ発行する。
+        if 'form_value' in self.request.session:
+            form_value = self.request.session['form_value']
+            menu = form_value[0]
+            genres = form_value[1]
+            allergies = form_value[2]
+            # 検索条件
+            condition_menu = Q()
+            condition_genre = Q()
+            condition_allergies = Q()
+            if len(menu) != 0 and menu[0]:
+                condition_menu = Q(menu_name__icontains=menu)
+            if len(genres) != 0:
+                condition_genre = Q(menu_genre__in=genres)
+            if len(allergies) != 0:
+                condition_allergies = ~Q(menu_allergies__in=allergies)
+            return Menu.objects.select_related().filter(condition_menu & condition_genre & condition_allergies)
+        else:
+            # 何も返さない
+            return Menu.objects.none()
+
+
 class MenuUpdateView(UpdateView):
     model = Menu
     template_name = "Menu/update.html"
