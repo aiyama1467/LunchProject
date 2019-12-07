@@ -75,7 +75,7 @@
         let ret = window.confirm('本当に削除しますか？');
 
         if (ret) {
-            window.location.href = '{% url 'accounts: delete ' %}'
+            window.location.href = '{% url 'accounts:delete' %}'
         }
     })
 </script>
