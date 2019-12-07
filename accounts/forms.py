@@ -1,7 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import (
-    UserCreationForm, PasswordChangeForm
-)
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth import get_user_model
 
 from menu_proposal.models import Allergies, Genres

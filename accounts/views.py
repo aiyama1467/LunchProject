@@ -134,7 +134,9 @@ class ModifyUserInfoView(LoginRequiredMixin, generic.FormView):
         if form.is_valid():
             form.save()
 
-        return redirect('accounts:my_page')
+            return redirect('accounts:my_page')
+
+        return redirect('accounts:modify_user_info')
 
     def get_initial(self):
         initial = super().get_initial()
