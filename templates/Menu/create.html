@@ -4,9 +4,16 @@
 <h2>メニュー登録</h2>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <table>
-        {{ form }}
-    </table>
-    <input type="submit">
+    {% for field in form %}
+    <label>{{field.label}}</label>
+    <br>
+    {% for i in field %}
+    <label class="selectbox">
+        {{i}}
+    </label>
+    {% endfor %}
+    <br>
+    {% endfor %}
+    <input type="submit" value="追加">
 </form>
 {% endblock content %}
