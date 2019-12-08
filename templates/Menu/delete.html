@@ -9,6 +9,7 @@
                 <button class="btn btn-danger">削除する</button>
                 {% csrf_token %}
             </form>
+            <a href="{% url 'menu_proposal:edit' %}">戻る</a>
         </div>
     </div>
 </div>
