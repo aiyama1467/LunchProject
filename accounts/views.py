@@ -51,11 +51,10 @@ class UserMyPage(generic.TemplateView):
         __slots__ = ['tax_rate', 'menu', 'price', 'energy', 'carbohydrates', 'salt', 'fat', 'protein', 'red', 'green', 'yellow']
 
         def __init__(self, menu=None):
-            self.tax_rate = 1.1
 
             if menu is not None:
                 self.menu = [menu.menu_name]
-                self.price = menu.menu_value * self.tax_rate
+                self.price = menu.menu_value
                 self.energy = menu.menu_energy
                 self.carbohydrates = menu.menu_carbohydrate
                 self.salt = menu.menu_salt_content
