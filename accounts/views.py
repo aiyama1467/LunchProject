@@ -27,12 +27,6 @@ class SignUpView(generic.CreateView):
     form_class = UserCreateForm
     success_url = reverse_lazy('accounts:signup_successful')
     template_name = 'accounts/signup.html'
-    context = {
-        'user_create_form': form_class()
-    }
-
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, self.context)
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -40,7 +34,11 @@ class SignUpView(generic.CreateView):
             form.save()
             return render(request, 'accounts/signup_successful.html')
 
-        return render(request, self.template_name, self.context)
+        context = {
+            'form': form,
+        }
+
+        return render(request, 'accounts/signup.html', context)
 
 
 class UserMyPage(LoginRequiredMixin, generic.TemplateView):
@@ -135,7 +133,11 @@ class ModifyUserInfoView(LoginRequiredMixin, generic.FormView):
 
             return redirect('accounts:my_page')
 
-        return redirect('accounts:modify_user_info')
+        context = {
+            'form': form
+        }
+
+        return render(request, 'accounts/modify_user_info.html', context)
 
     def get_initial(self):
         initial = super().get_initial()
