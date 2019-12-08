@@ -43,7 +43,7 @@ class SignUpView(generic.CreateView):
         return render(request, self.template_name, self.context)
 
 
-class UserMyPage(generic.TemplateView):
+class UserMyPage(LoginRequiredMixin, generic.TemplateView):
     """マイページのView"""
     template_name = 'accounts/user_my_page.html'
 
