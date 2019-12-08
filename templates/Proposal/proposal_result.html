@@ -37,7 +37,16 @@
         総計
     </legend>
     {% for key, value in total.items %}
-    {{key}}:{{value|floatformat:-1}}{{unit|index:forloop.counter0}}<br>
+    <table>
+        <tr>
+            <th width="300">
+                {{key}}
+            </th>
+            <th>
+                {{value|floatformat:-1}}{{unit|index:forloop.counter0}}
+            </th>
+        </tr>
+    </table>
     {% endfor %}
 </fieldset>
 {{total.name }}
