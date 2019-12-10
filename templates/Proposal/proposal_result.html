@@ -20,11 +20,14 @@
         {% for key, value in sum|get_items:i %}
         <table>
             <tr>
-                <th width="300">
+                <th width="300" align="left">
                     {{key}}
                 </th>
-                <th>
-                    {{value|floatformat:-1}}{{unit|index:forloop.counter0}}
+                <th width="400" align="right">
+                    {{value|floatformat:-1}}
+                </th>
+                <th width="40" align="left">
+                    {{unit|index:forloop.counter0}}
                 </th>
             </tr>
         </table>
@@ -39,12 +42,15 @@
     {% for key, value in total.items %}
     <table>
         <tr>
-            <th width="300">
+            <th width="300" align="left">
                 {{key}}
             </th>
-            <th>
+            <th width="400" align="right">
                 {{value|floatformat:-1}}{{unit|index:forloop.counter0}}
             </th>
+            <th width="40" align="left">
+                    {{unit|index:forloop.counter0}}
+                </th>
         </tr>
     </table>
     {% endfor %}

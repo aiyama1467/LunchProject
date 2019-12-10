@@ -25,7 +25,7 @@
 {% endfor %}
 <!--ページ送り-->
 {% if page_obj.has_previous %}
-<a href="?page={{ page_obj.previous_page_number }}">前へ</a>
+<a align="left" href="?page={{ page_obj.previous_page_number }}">前へ</a>
 {% endif %}
 
 {% for num in page_obj.paginator.page_range %}

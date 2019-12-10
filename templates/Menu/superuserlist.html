@@ -21,7 +21,7 @@
 {% for menu in menu_list %}
 <table width="100%">
     <tr>
-        <th width="80%">
+        <th width="80%" align="left">
             <a href={% url 'menu_proposal:detail' pk=menu.id %}>{{menu.menu_name}}</a>
         </th>
         <th width="10%">
