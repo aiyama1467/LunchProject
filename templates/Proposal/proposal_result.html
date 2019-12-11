@@ -32,6 +32,10 @@
             </tr>
         </table>
         {% endfor %}
+        <details open>
+            <summary>栄養のグラフ</summary>
+            {{graph_list|index:forloop.counter0|safe}}
+        </details>
     </div>
 </fieldset>
 {% endfor %}
@@ -46,14 +50,25 @@
                 {{key}}
             </th>
             <th width="400" align="right">
-                {{value|floatformat:-1}}{{unit|index:forloop.counter0}}
+                {{value|floatformat:-1}}
             </th>
             <th width="40" align="left">
-                    {{unit|index:forloop.counter0}}
-                </th>
+                {{unit|index:forloop.counter0}}
+            </th>
         </tr>
     </table>
     {% endfor %}
+    <details open>
+        <summary>栄養のグラフ</summary>
+        {{div|safe}}
+    </details>
+    {% if time_int == 5 %}
+    <details open>
+        <summary>栄養の推移のグラフ</summary>
+        {{div2|safe}}
+    </details>
+    {% endif %}
+
 </fieldset>
 {{total.name }}
 <input type="button" value="戻る" onClick="javascript:history.go(-1);">

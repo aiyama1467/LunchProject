@@ -12,6 +12,8 @@ from accounts.models import EatLog
 import numpy as np
 import operator
 import itertools
+import plotly.offline as opy
+import plotly.graph_objs as go
 
 
 class MenuProposalView(FormView):
@@ -64,6 +66,7 @@ class MenuProposalView(FormView):
             return super().form_invalid(form)
         # menu_listから各要素の合計値を求める
         menu_sum_list = []
+        menu_graph_list = []
         for menu in menu_list:
             sum = {"税込価格（Price (incl. tax)）": 0, "カロリー（Energy）": 0.0,  "炭水化物（Carbohydrates）": 0.0, "塩分（Salt）": 0.0, "脂質（Fat）": 0.0,
                    "タンパク質（Protein）": 0.0, "赤（Red）": 0.0,  "緑（Green）": 0.0, "黄（Yellow）": 0.0, }
@@ -78,8 +81,34 @@ class MenuProposalView(FormView):
                 sum["緑（Green）"] += i.menu_green_point
                 sum["黄（Yellow）"] += i.menu_yellow_point
             menu_sum_list.append(sum)
+            x = [sum["炭水化物（Carbohydrates）"], sum["塩分（Salt）"], sum["脂質（Fat）"], sum["タンパク質（Protein）"],
+                 sum["赤（Red）"], sum["緑（Green）"], sum["黄（Yellow）"]]
+            y = ["炭水化物", "塩分", "脂質", "タンパク質", "赤", "緑", "黄"]
+            data = [go.Bar(
+                x=list(reversed(x)),
+                y=list(reversed(y)),
+                orientation='h'
+            )]
+            layout = go.Layout(title="栄養素",
+                               paper_bgcolor='rgba(0,0,0,0)',
+                               plot_bgcolor='rgba(0,0,0,0)',
+                               font=dict(color='rgba(255,255,255,1)'))
+            fig = go.Figure(data=data, layout=layout)
+            div = opy.plot(fig, auto_open=False, output_type='div')
+            menu_graph_list.append(div)
+        data = [go.Bar(
+            x=list(reversed(list(sum.values()))),
+            y=list(reversed(list(sum.keys()))),
+            orientation='h'
+        )]
+        layout = go.Layout(title="栄養素",
+                           paper_bgcolor='rgba(0,0,0,0)',
+                           plot_bgcolor='rgba(0,0,0,0)',
+                           font=dict(color='rgba(255,255,255,1)'))
+        fig = go.Figure(data=data, layout=layout)
+        div = opy.plot(fig, auto_open=False, output_type='div')
         # 日付のリスト
-        date = [timezone.datetime.today()]
+        date = [timezone.datetime.today().date()]
         # 土曜日の時,一日目を月曜日に
         if date[0].strftime('%w') == "6":
             date[0] += timezone.timedelta(days=2)
@@ -112,10 +141,28 @@ class MenuProposalView(FormView):
         unit = ["円", "kcal", "g", "g", "g", "g", "", "", ""]
         # 提案した献立の総栄養素
         result = {}
-        for d in menu_sum_list:
-            for k in d.keys():
+        trace = []
+        graph_list = []
+        name = list(menu_sum_list[0].keys())
+        for i, d in enumerate(menu_sum_list):
+            graph = []
+            for j, k in enumerate(d.keys()):
                 result[k] = result.get(k, 0) + d[k]
-        return render(self.request, 'Proposal/proposal_result.html', {"date": date, "form": form, "menu": menu_list, "sum": menu_sum_list, "time": range(int(form.cleaned_data["time"])), "total": result, "unit": unit})
+                graph.append(d[k])
+            graph_list.append(graph)
+        graph_list = list(zip(*graph_list))
+        for i, graph in enumerate(graph_list):
+            trace.append(go.Scatter(
+                x=date, y=graph, mode='lines+markers', name=name[i]))
+        layout = go.Layout(xaxis=dict(type='date'),  # dtick: 'M1'で１ヶ月ごとにラベル表示
+                           yaxis=dict(),
+                           title="推移",
+                           paper_bgcolor='rgba(0,0,0,0)',
+                           plot_bgcolor='rgba(0,0,0,0)',
+                           font=dict(color='rgba(255,255,255,1)'))
+        fig = go.Figure(data=trace, layout=layout)
+        div2 = opy.plot(fig,  output_type='div')
+        return render(self.request, 'Proposal/proposal_result.html', {"date": date, "form": form, "menu": menu_list, "sum": menu_sum_list, "time": range(int(form.cleaned_data["time"])), "total": result, "unit": unit, "graph_list": menu_graph_list, "div": div, "div2": div2, "time_int": int(form.cleaned_data["time"])})
 
     def form_invalid(self, form):
         messages.error(self.request, "入力に誤りがあります。もう一度正しく入力してください。")
