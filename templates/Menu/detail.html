@@ -8,6 +8,9 @@
 {% endif %}
 
 <h3>{{menu.menu_name}}</h3>
+{% if user.is_superuser %}
+<a href={% url 'menu_proposal:update' pk=menu.pk %}>メニューの修正</a>
+{% endif %}
 {% if menu.menu_picture %}
 <th>画像：<br><img src="{{ menu.menu_picture.url }}" width="50%" height="50%" /></th>
 {% endif %}
@@ -37,7 +40,7 @@
             カロリー
         </th>
         <th>
-            {{menu.menu_lipid}}kcal
+            {{menu.menu_energy}}kcal
         </th>
     </tr>
     <tr>
@@ -96,4 +99,8 @@
         </th>
     </tr>
 </table>
+<details open>
+    <summary>栄養素のグラフ</summary>
+    {{graph|safe}}
+</details>
 {% endblock content %}

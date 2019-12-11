@@ -6,7 +6,18 @@
     {% csrf_token %}
     {% for field in form %}
     <label>{{field.label}}</label>
+    {% if field.help_text %}
+    <span>{{ field.help_text }}</span>
+    {% endif %}
     <br>
+    {% if field.errors %}
+    <div>
+        {% for error in field.errors %}
+        {{ error }}<br>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     {% for i in field %}
     <label class="selectbox">
         {{i}}

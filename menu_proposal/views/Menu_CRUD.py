@@ -7,6 +7,8 @@ from menu_proposal.models import *
 from django import forms
 from menu_proposal.forms import *
 from django.core.exceptions import PermissionDenied
+import plotly.offline as opy
+import plotly.graph_objs as go
 
 
 class MenuCreateView(CreateView):
@@ -39,6 +41,25 @@ class MenuCreateView(CreateView):
 class MenuDetailView(DetailView):
     model = Menu
     template_name = "Menu/detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        x = [context["menu"].menu_carbohydrate, context["menu"].menu_salt_content, context["menu"].menu_lipid, context["menu"].menu_protein,
+             context["menu"].menu_red_point, context["menu"].menu_green_point, context["menu"].menu_yellow_point]
+        y = ["炭水化物", "塩分", "脂質", "タンパク質", "赤", "緑", "黄"]
+        data = [go.Bar(
+            x=list(reversed(x)),
+            y=list(reversed(y)),
+            orientation='h'
+        )]
+        layout = go.Layout(title="栄養素",
+                           paper_bgcolor='rgba(0,0,0,0)',
+                           plot_bgcolor='rgba(0,0,0,0)',
+                           font=dict(color='rgba(255,255,255,1)'))
+        fig = go.Figure(data=data, layout=layout)
+        div = opy.plot(fig, auto_open=False, output_type='div')
+        context["graph"] = div
+        return context
 
 
 class MenuListView(ListView):

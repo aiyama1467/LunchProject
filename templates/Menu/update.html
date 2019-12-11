@@ -5,10 +5,29 @@
 <a href={% url 'menu_proposal:edit' %}>一覧に戻る</a>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <table>
-        {{ form }}
-    </table>
-    <input type="submit"><br>
+    {% for field in form %}
+    <label>{{field.label}}</label>
+    {% if field.help_text %}
+    <span>{{ field.help_text }}</span>
+    {% endif %}
+    <br>
+    {% if field.errors %}
+    <div>
+        {% for error in field.errors %}
+        {{ error }}<br>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% for i in field %}
+    <label class="selectbox">
+        {{i}}
+    </label>
+    {% endfor %}
+    <br>
+    {% endfor %}
+
+    <input type="submit" value="修正"><br>
 </form>
 
 {% endblock content %}
