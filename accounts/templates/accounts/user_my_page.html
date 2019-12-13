@@ -91,6 +91,13 @@
     {% endif %}
 
     <section>
+    <h3>栄養経過</h3>
+    {% if graph %}
+        {{ graph|safe }}
+    {% endif %}
+    </section>
+
+    <section>
         <h3>ユーザ情報　<a href="{% url 'accounts:modify_user_info' %}">編集</a></h3>
         <table border="3">
             <tr>

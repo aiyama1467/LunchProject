@@ -5,6 +5,8 @@ from django.views import generic
 from django.contrib.auth import logout
 from django.contrib.auth.views import PasswordChangeView, PasswordChangeDoneView
 
+import plotly
+import datetime
 from collections import OrderedDict
 
 from accounts.models import User, EatLog
@@ -79,6 +81,18 @@ class UserMyPage(LoginRequiredMixin, generic.TemplateView):
 
             return self
 
+        def get_dict(self):
+            return {
+                'energy': self.energy,
+                'carbohydrates': self.carbohydrates,
+                'salt': self.salt,
+                'fat': self.fat,
+                'protein': self.protein,
+                'red': self.red,
+                'green': self.green,
+                'yellow': self.yellow
+            }
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -86,15 +100,66 @@ class UserMyPage(LoginRequiredMixin, generic.TemplateView):
 
         eat_log = EatLog.objects.filter(user=self.request.user)
         nutrient_shift = OrderedDict()
+        date_time = list()
 
         for log in eat_log:
             if log.eat_datetime.isoformat() not in nutrient_shift.keys():
+                date_time.append(log.eat_datetime)
                 nutrient_shift[log.eat_datetime.isoformat()] = self.Data()
 
             for m in log.menu.all():
                 nutrient_shift[log.eat_datetime.isoformat()] += self.Data(m)
 
         context['nutrient_shift'] = nutrient_shift
+
+        date = list()
+        _3m_ago = datetime.date.today() - datetime.timedelta(days=6)
+        for d in range(7):
+            date.append(_3m_ago + datetime.timedelta(days=d))
+
+        data = list()
+        nut = {
+            'energy': [],
+            'carbohydrates': [],
+            'salt': [],
+            'fat': [],
+            'protein': [],
+            'red': [],
+            'green': [],
+            'yellow': []
+        }
+        for d in date:
+            if d.isoformat() in nutrient_shift.keys():
+                key = d.isoformat()
+                nut['energy'].append(nutrient_shift[key].energy)
+                nut['carbohydrates'].append(nutrient_shift[key].carbohydrates)
+                nut['salt'].append(nutrient_shift[key].salt)
+                nut['fat'].append(nutrient_shift[key].fat)
+                nut['protein'].append(nutrient_shift[key].protein)
+                nut['red'].append(nutrient_shift[key].red)
+                nut['green'].append(nutrient_shift[key].green)
+                nut['yellow'].append(nutrient_shift[key].yellow)
+
+            else:
+                nut['energy'].append(0)
+                nut['carbohydrates'].append(0)
+                nut['salt'].append(0)
+                nut['fat'].append(0)
+                nut['protein'].append(0)
+                nut['red'].append(0)
+                nut['green'].append(0)
+                nut['yellow'].append(0)
+
+        for g in nut.keys():
+            data.append(plotly.graph_objs.Scatter(x=date, y=nut[g], name=g))
+
+        layout = plotly.graph_objs.Layout(
+            xaxis={"title": "日付"},
+            yaxis={"title": "栄養素"}
+        )
+        figure = plotly.graph_objs.Figure(data=data, layout=layout)
+        div = plotly.offline.plot(figure, auto_open=False, output_type='div')
+        context['graph'] = div
 
         return context
 
