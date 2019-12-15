@@ -11,7 +11,7 @@ from collections import OrderedDict
 
 from accounts.models import User, EatLog
 from .forms import UserCreateForm, PasswordModifyForm, ModifyUserInfoForm
-
+from menu_proposal.models import Menu
 
 class OnlyYouMixin(UserPassesTestMixin):
     """
@@ -223,4 +223,60 @@ class ModifyUserInfoView(LoginRequiredMixin, generic.FormView):
 
         return initial
 
+
+class ModifyEatLogView(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'accounts/modify_eatlog.html'
+
+    def post(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu_list'] = Menu.objects.all()
+        #現在の献立のリストを受け取る
+        if request.POST.getlist('eat_log', None):
+            context['eatlog_list'] = self.request.POST.getlist('eat_log', None)
+
+        #追加を押されたとき、そのメニューを追加
+        if request.POST.get('add', None):
+            add = request.POST.get('add', None)
+            if 'eatlog_list' in context.keys():
+                context['eatlog_list'].append(add)
+            else:
+                context['eatlog_list'] = [add]
+            context['eatlog_list'].sort()
+            print(type(context['eatlog_list']), context['eatlog_list'])
+
+        #削除を押されたとき、そのメニューを削除
+        if request.POST.get('del', None):
+            delete = request.POST.get('del', None)
+            context['eatlog_list'].remove(delete)
+
+        #決定を押されたとき、食事履歴を更新
+        if request.POST.get('update', None):
+            eatlog = [int(i) for i in context['eatlog_list']]
+            log = EatLog.objects.get(
+                user=self.request.user, eat_datetime=self.kwargs.get('date'))
+            log.menu.set(eatlog)
+            log.save()
+            return redirect('accounts:my_page')
+
+        return render(request, 'accounts/modify_eatlog.html', context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ls = EatLog.objects.get(
+            user=self.request.user, eat_datetime=self.kwargs.get('date')).menu.all()
+        context["eatlog_list"] = [i.id for i in ls]
+        context["menu_list"] = Menu.objects.all()
+        context.update()
+        self.plus_context = context
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+        user = self.request.user
+        menu = []
+        for a in EatLog.objects.get(user=self.request.user, eat_datetime=self.kwargs.get('date')).menu.all():
+            menu.append(a.pk)
+        initial['menu'] = menu
+
+        return initial
 # Todo: signup, login, logoutのページのレイアウトを調整する

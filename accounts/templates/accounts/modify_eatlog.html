@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load index%}
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    <h3>現在の献立</h3>
+        <div>
+            <table width="100%" id="menu_list_view">
+                {% for i in eatlog_list %}
+                <tr>
+                    <th width="80%" align="left">
+                        {{i|get_menuname:i}}
+                        <input type="hidden" name="eat_log" value={{i}}>
+                    </th>
+                    <th width="20%">
+                        <button name="del" value={{i}}>削除</button>
+                    </th>
+                </tr>
+            {% endfor %}
+            </table>
+            <button name="update" value="update">決定</button>
+        </div>
+    <h3>メニューリスト</h3>
+        <div>
+            {% for menu in menu_list %}
+            <div>
+                <table width="100%">
+                    <tr>
+                        <th width="80%" align="left">
+                            {{menu.menu_name}}
+                        </th>
+                        <th width="20%">
+                        <button name="add" value={{menu.id}}>追加</button>
+                            {% comment %} <a class="btn btn-primary" onclick="add_eating_menu({{menu.id}},'{{menu.menu_name}}')">追加</a> {% endcomment %}
+                        </th>
+                    </tr>
+                </table>
+            </div>
+            {% endfor %}
+
+        </div>
+</form>
+    {% comment %} <script type="text/javascript">
+        var ls = {{eatlog_list}};
+        var namels=[
+        {% for i in eatlog_list %}
+        {{i|get_menuname:i}},
+        {% endfor %}
+        ];
+        var hoge="{{eatlog_list|safe}}";
+        function add_eating_menu(num,menu_name) {
+            ls.push(parseInt(num));
+            alert(menu_name);
+            var view=document.getElementById('menu_list_view');
+            var html='';
+            for(menu of ls){
+                alert(menu);
+                var str = '<th width="80%" align="left"> menu_name </th><th width=\"20%\"><a onclick=\"del_eating_menu(123456)\">削除</a></th></tr>'.replace(/menu_name/,menu_name);
+                html+=str;
+            }
+            view.innerHTML=html;
+            alert("Pushed!");
+        }
+
+        function del_eating_menu(num,menu_name) {
+            alert(ls);
+                        alert(menu_name);
+            alert(num);
+            for (i = 0; i < ls.length; i++) {
+                if (num == ls[i]) {
+                    ls.splice(i, 1);
+                    break;
+                }
+            }
+            alert(ls);
+            var view=document.getElementById('menu_list_view');
+            var html='';
+            for(menu of ls){
+            var str = '<th width="80%" align="left"> menu_name </th><th width="20%"><a onclick="del_eating_menu(0)">削除</a></th></tr>'.replace(/0/g, menu);
+            html+=str;
+            }
+            view.innerHTML=html;
+            alert("Pushed!");
+        }
+    </script> {% endcomment %}
+
+
+<a href="{% url 'accounts:my_page' %}">プロフィールに戻る</a>
+{% endblock %}
