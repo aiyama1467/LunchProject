@@ -117,12 +117,13 @@ class MenuProposalView(FormView):
             date[0] += timezone.timedelta(days=1)
         # 一般ユーザーが利用したとき食事履歴を追加
         if self.request.user.is_authenticated and self.request.user.is_superuser == False:
-            log = EatLog.objects.create(
-                user=self.request.user, eat_datetime=date[0])
-            for menu in menu_list[0]:
-                log.menu.add(menu)
-            messages.info(self.request, "食事履歴を追加しました")
-            log.save()
+            if not EatLog.objects.filter(user=self.request.user, eat_datetime=date[0]).exists():
+                log = EatLog.objects.create(
+                    user=self.request.user, eat_datetime=date[0])
+                for menu in menu_list[0]:
+                    log.menu.add(menu)
+                messages.info(self.request, "食事履歴を追加しました")
+                log.save()
         for i in range(1, int(form.cleaned_data["time"])):
 
             if date[i - 1].strftime('%w') == '5':
@@ -132,6 +133,8 @@ class MenuProposalView(FormView):
             date.append(aa)
             # 一般ユーザーが利用したとき食事履歴を追加
             if self.request.user.is_authenticated and self.request.user.is_superuser == False:
+                if not EatLog.objects.filter(user=self.request.user, eat_datetime=date[i]).exists():
+                    continue
                 log = EatLog.objects.create(
                     user=self.request.user, eat_datetime=date[i])
                 for menu in menu_list[0]:

@@ -18,6 +18,7 @@
         <dl id="acMenu">
             {% for date, nutrient in nutrient_shift.items %}
                 <dt><span class="date">{{ date }}</span></dt>
+                <a href={% url 'accounts:modifyeatlog' date %}>編集</a>
                 <dd>
                     <fieldset>
                         <div>
@@ -74,7 +75,7 @@
         </dl>
         <script>
             $("#acMenu dt").on("click", function () {
-                $(this).next().slideToggle();
+                $(this).next().next().slideToggle();
             });
         </script>
         <style>

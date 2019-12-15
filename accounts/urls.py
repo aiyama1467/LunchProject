@@ -10,5 +10,7 @@ urlpatterns = [
     path('delete/', views.UserDeleteView.as_view(), name='delete'),
     path('my_page/password_modify/', views.PasswordModifyView.as_view(), name='password_modify'),
     path('my_page/password_modify/done/', views.PasswordModifyDoneView.as_view(), name='password_modify_done'),
-    path('my_page/modify_user_info/', views.ModifyUserInfoView.as_view(), name='modify_user_info')
+    path('my_page/modify_user_info/', views.ModifyUserInfoView.as_view(), name='modify_user_info'),
+    path('my_page/modify_eatlog/<date>', views.ModifyEatLogView.as_view(), name='modifyeatlog'),
+
 ]
