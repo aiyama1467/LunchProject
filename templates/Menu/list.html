@@ -15,6 +15,20 @@
     {% endfor %}
     <br>
     {% endfor %}
+
+    <div>
+        <label>ソート条件</label> <br>
+        <input type="radio" name="order" value="order_name" checked><label>名前</label> <br>
+        <input type="radio" name="order_by_name" value="ascend" checked> 昇順
+        <input type="radio" name="order_by_name" value="descend"> 降順
+
+        <br><br>
+
+        <input type="radio" name="order" value="order_price"><label>値段</label> <br>
+        <input type="radio" name="order_by_price" value="ascend" checked> 昇順
+        <input type="radio" name="order_by_price" value="descend"> 降順
+    </div>
+
     <input type="submit" id="button" name="button" value="検索">
 </form>
 <h1>検索結果</h1>
