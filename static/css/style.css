@@ -582,11 +582,11 @@ img.fl {float: left;margin-right: 10px;margin-bottom: 10px;}
 }
 /*三本バーアイコン*/
 #menubar_hdr.close {
-	background: #fff url(../images/icon_menu.png) no-repeat center top/50px;
+	background: #fff url(../img/icon_menu.png) no-repeat center top/50px;
 }
 /*閉じるアイコン*/
 #menubar_hdr.open {
-	background: #fff url(../images/icon_menu.png) no-repeat center bottom/50px;
+	background: #fff url(../img/icon_menu.png) no-repeat center bottom/50px;
 }
 
 /*main,sub,side,contents-in

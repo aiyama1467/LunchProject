@@ -12,6 +12,7 @@ from collections import OrderedDict
 from accounts.models import User, EatLog
 from .forms import UserCreateForm, PasswordModifyForm, ModifyUserInfoForm
 from menu_proposal.models import Menu
+import collections
 
 class OnlyYouMixin(UserPassesTestMixin):
     """
@@ -98,7 +99,7 @@ class UserMyPage(LoginRequiredMixin, generic.TemplateView):
 
         context['user'] = User.objects.get(id=self.request.user.id)
 
-        eat_log = EatLog.objects.filter(user=self.request.user)
+        eat_log = EatLog.objects.filter(user=self.request.user).order_by('eat_datetime')
         nutrient_shift = OrderedDict()
         date_time = list()
 
@@ -155,7 +156,10 @@ class UserMyPage(LoginRequiredMixin, generic.TemplateView):
 
         layout = plotly.graph_objs.Layout(
             xaxis={"title": "日付"},
-            yaxis={"title": "栄養素"}
+            yaxis={"title": "栄養素", "rangemode":"tozero"},
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='rgba(255,255,255,1)')
         )
         figure = plotly.graph_objs.Figure(data=data, layout=layout)
         div = plotly.offline.plot(figure, auto_open=False, output_type='div')
@@ -241,7 +245,10 @@ class ModifyEatLogView(LoginRequiredMixin, generic.TemplateView):
                 context['eatlog_list'].append(add)
             else:
                 context['eatlog_list'] = [add]
-            context['eatlog_list'].sort()
+
+            eatlog = [int(i) for i in context['eatlog_list']]
+            eatlog.sort()
+            context['eatlog_list']=eatlog
             print(type(context['eatlog_list']), context['eatlog_list'])
 
         #削除を押されたとき、そのメニューを削除
@@ -252,31 +259,44 @@ class ModifyEatLogView(LoginRequiredMixin, generic.TemplateView):
         #決定を押されたとき、食事履歴を更新
         if request.POST.get('update', None):
             eatlog = [int(i) for i in context['eatlog_list']]
-            log = EatLog.objects.get(
+
+            log_list=EatLog.objects.filter(
                 user=self.request.user, eat_datetime=self.kwargs.get('date'))
-            log.menu.set(eatlog)
-            log.save()
+            log_list=[i for i in log_list]
+
+            eatlog_tuple = collections.Counter(eatlog)
+            eatlog_tuple = eatlog_tuple.most_common()
+
+            for i in range(eatlog_tuple[0][1]):
+                dup = [x for x in set(eatlog) if eatlog.count(x) > i]
+                if len(log_list) > i:
+                    log_list[i].menu.set(dup)
+                else:
+                    log_list.append(EatLog.objects.create(
+                        user=self.request.user, eat_datetime=self.kwargs.get('date')))
+                    log_list[i].menu.set
+
+            for log in range(eatlog_tuple[0][1], len(log_list)):
+                log_list[log].delete()
+
+            del log_list[eatlog_tuple[0][1]:]
+
+            for log in log_list:
+                log.save()
             return redirect('accounts:my_page')
 
         return render(request, 'accounts/modify_eatlog.html', context)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        ls = EatLog.objects.get(
-            user=self.request.user, eat_datetime=self.kwargs.get('date')).menu.all()
-        context["eatlog_list"] = [i.id for i in ls]
+        ls = EatLog.objects.filter(
+            user=self.request.user, eat_datetime=self.kwargs.get('date'))
+        eatlog=[]
+        for log in ls:
+            for menu in log.menu.all():
+                eatlog.append(menu.id)
+        eatlog.sort()
+        context["eatlog_list"] = eatlog
         context["menu_list"] = Menu.objects.all()
-        context.update()
-        self.plus_context = context
         return context
-
-    def get_initial(self):
-        initial = super().get_initial()
-        user = self.request.user
-        menu = []
-        for a in EatLog.objects.get(user=self.request.user, eat_datetime=self.kwargs.get('date')).menu.all():
-            menu.append(a.pk)
-        initial['menu'] = menu
-
-        return initial
 # Todo: signup, login, logoutのページのレイアウトを調整する
