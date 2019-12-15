@@ -71,8 +71,17 @@ class MenuListView(ListView):
         form_value = [
             self.request.POST.get('name', None),
             self.request.POST.getlist('genre'),
-            self.request.POST.getlist('allergy'),
+            self.request.POST.getlist('allergy')
         ]
+
+        if 'order_name' == self.request.POST.get('order'):
+            form_value.append('order_name')
+            form_value.append(self.request.POST.get('order_by_name'))
+
+        if 'order_price' == self.request.POST.get('order'):
+            form_value.append('order_price')
+            form_value.append(self.request.POST.get('order_by_price'))
+
         request.session['form_value'] = form_value
         # 検索時にページネーションに関連したエラーを防ぐ
         self.request.GET = self.request.GET.copy()
@@ -86,8 +95,9 @@ class MenuListView(ListView):
         if 'form_value' in self.request.session:
             form_value = self.request.session['form_value']
             menu = form_value[0]
-        default_data = {'name': name,  # タイトル
-                        }
+        default_data = {
+            'name': name,  # タイトル
+        }
         test_form = MenuSearchForm(initial=default_data)  # 検索フォーム
         context['test_form'] = test_form
         return context
@@ -99,6 +109,9 @@ class MenuListView(ListView):
             menu = form_value[0]
             genres = form_value[1]
             allergies = form_value[2]
+            order_by = form_value[3]
+            order = form_value[4]
+
             # 検索条件
             condition_menu = Q()
             condition_genre = Q()
@@ -109,7 +122,19 @@ class MenuListView(ListView):
                 condition_genre = Q(menu_genre__in=genres)
             if len(allergies) != 0:
                 condition_allergies = ~Q(menu_allergies__in=allergies)
-            return Menu.objects.select_related().filter(condition_menu & condition_genre & condition_allergies)
+
+            if order_by == 'order_name':
+                if order == 'ascend':
+                    return Menu.objects.select_related().filter(condition_menu & condition_genre & condition_allergies).order_by('menu_name')
+                else:
+                    return Menu.objects.select_related().filter(condition_menu & condition_genre & condition_allergies).order_by('menu_name').reverse()
+
+            elif order_by == 'order_price':
+                if order == 'ascend':
+                    return Menu.objects.select_related().filter(condition_menu & condition_genre & condition_allergies).order_by('menu_value')
+                else:
+                    return Menu.objects.select_related().filter(condition_menu & condition_genre & condition_allergies).order_by('menu_value').reverse()
+
         else:
             # 何も返さない
             return Menu.objects.none()
