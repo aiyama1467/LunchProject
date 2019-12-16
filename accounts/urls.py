@@ -12,5 +12,8 @@ urlpatterns = [
     path('my_page/password_modify/done/', views.PasswordModifyDoneView.as_view(), name='password_modify_done'),
     path('my_page/modify_user_info/', views.ModifyUserInfoView.as_view(), name='modify_user_info'),
     path('my_page/modify_eatlog/<date>', views.ModifyEatLogView.as_view(), name='modifyeatlog'),
+    path('my_page/add_eatlog/', views.AddEatLogView.as_view(), name='addeatlog'),
+    path('my_page/delete_eatlog/<date>',
+         views.DeleteEatLogView.as_view(), name='deleatlog'),
 
 ]

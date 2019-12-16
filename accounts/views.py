@@ -13,6 +13,7 @@ from accounts.models import User, EatLog
 from .forms import UserCreateForm, PasswordModifyForm, ModifyUserInfoForm
 from menu_proposal.models import Menu
 import collections
+from django.contrib import messages
 
 class OnlyYouMixin(UserPassesTestMixin):
     """
@@ -249,7 +250,6 @@ class ModifyEatLogView(LoginRequiredMixin, generic.TemplateView):
             eatlog = [int(i) for i in context['eatlog_list']]
             eatlog.sort()
             context['eatlog_list']=eatlog
-            print(type(context['eatlog_list']), context['eatlog_list'])
 
         #削除を押されたとき、そのメニューを削除
         if request.POST.get('del', None):
@@ -258,9 +258,12 @@ class ModifyEatLogView(LoginRequiredMixin, generic.TemplateView):
 
         #決定を押されたとき、食事履歴を更新
         if request.POST.get('update', None):
-            eatlog = [int(i) for i in context['eatlog_list']]
-
-            log_list=EatLog.objects.filter(
+            if 'eatlog_list' in context.keys():
+                eatlog = [int(i) for i in context['eatlog_list']]
+            else:
+                messages.error(self.request, 'メニューを一つ以上指定してください')
+                return render(request, 'accounts/modify_eatlog.html', context)
+            log_list = EatLog.objects.filter(
                 user=self.request.user, eat_datetime=self.kwargs.get('date'))
             log_list=[i for i in log_list]
 
@@ -283,6 +286,8 @@ class ModifyEatLogView(LoginRequiredMixin, generic.TemplateView):
 
             for log in log_list:
                 log.save()
+            messages.success(self.request, str(
+                self.kwargs.get('date')) + 'の献立を修正しました')
             return redirect('accounts:my_page')
 
         return render(request, 'accounts/modify_eatlog.html', context)
@@ -299,4 +304,101 @@ class ModifyEatLogView(LoginRequiredMixin, generic.TemplateView):
         context["eatlog_list"] = eatlog
         context["menu_list"] = Menu.objects.all()
         return context
+
+
+class AddEatLogView(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'accounts/add_eatlog.html'
+
+    def post(self, request, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu_list'] = Menu.objects.all()
+        if request.POST.get('add_date', None):
+            context['date'] = request.POST.get('add_date', None)
+
+        #現在の献立のリストを受け取る
+        if request.POST.getlist('eat_log', None):
+            context['eatlog_list'] = self.request.POST.getlist('eat_log', None)
+
+        #追加を押されたとき、そのメニューを追加
+        if request.POST.get('add', None):
+            add = request.POST.get('add', None)
+            if 'eatlog_list' in context.keys():
+                context['eatlog_list'].append(add)
+            else:
+                context['eatlog_list'] = [add]
+
+            eatlog = [int(i) for i in context['eatlog_list']]
+            eatlog.sort()
+            context['eatlog_list'] = eatlog
+
+        #削除を押されたとき、そのメニューを削除
+        if request.POST.get('del', None):
+            delete = request.POST.get('del', None)
+            context['eatlog_list'].remove(delete)
+
+        #決定を押されたとき、食事履歴を追加
+        if request.POST.get('update', None):
+            if 'eatlog_list' in context.keys():
+                eatlog = [int(i) for i in context['eatlog_list']]
+            else:
+                messages.error(self.request, 'メニューを一つ以上指定してください')
+                return render(request, 'accounts/add_eatlog.html', context)
+
+            if request.POST.get('add_date', None):
+                context['date'] = request.POST.get('add_date', None)
+                date = request.POST.get('add_date', None)
+            else:
+                messages.error(self.request, '日付を指定してください')
+                return render(request, 'accounts/add_eatlog.html', context)
+
+            log_list = []
+
+            eatlog_tuple = collections.Counter(eatlog)
+            eatlog_tuple = eatlog_tuple.most_common()
+
+            for i in range(eatlog_tuple[0][1]):
+                dup = [x for x in set(eatlog) if eatlog.count(x) > i]
+                log_list.append(EatLog.objects.create(
+                    user=self.request.user, eat_datetime=date))
+                log_list[i].menu.set(dup)
+            for log in log_list:
+                log.save()
+            messages.success(self.request, str(date) + 'の献立を追加しました')
+            return redirect('accounts:my_page')
+
+        return render(request, 'accounts/add_eatlog.html', context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["menu_list"] = Menu.objects.all()
+        return context
+
+
+class DeleteEatLogView(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'accounts/del_eatlog.html'
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('delete', None):
+            log_list = EatLog.objects.filter(user=self.request.user, eat_datetime=self.kwargs.get('date'))
+            for i in log_list:
+                i.delete()
+            messages.success(self.request, str(
+                self.kwargs.get('date')) + 'の献立を削除しました')
+            return redirect('accounts:my_page')
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['date'] = self.kwargs.get('date')
+        ls = EatLog.objects.filter(
+            user=self.request.user, eat_datetime=self.kwargs.get('date'))
+        eatlog = []
+        for log in ls:
+            for menu in log.menu.all():
+                eatlog.append(menu.id)
+        eatlog.sort()
+        context["eatlog_list"] = eatlog
+        return context
+
+
 # Todo: signup, login, logoutのページのレイアウトを調整する

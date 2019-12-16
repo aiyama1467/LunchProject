@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load index %}
+{% block content %}
+<h2>献立削除</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <p>{{ date }}の献立を削除していいですか?</p>
+            <form method="post">
+                <button class="btn btn-danger" name="delete" value={{date}}>削除する</button>
+                {% csrf_token %}
+            </form>
+            <a href="{% url 'accounts:my_page' %}">戻る</a>
+        </div>
+        <div>
+            <h3>{{date}}の献立</h3>
+            {% for i in eatlog_list %}
+                {{i|get_menuname:i}}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
