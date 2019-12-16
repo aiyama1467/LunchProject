@@ -83,18 +83,6 @@ class UserMyPage(LoginRequiredMixin, generic.TemplateView):
 
             return self
 
-        def get_dict(self):
-            return {
-                'energy': self.energy,
-                'carbohydrates': self.carbohydrates,
-                'salt': self.salt,
-                'fat': self.fat,
-                'protein': self.protein,
-                'red': self.red,
-                'green': self.green,
-                'yellow': self.yellow
-            }
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -121,6 +109,7 @@ class UserMyPage(LoginRequiredMixin, generic.TemplateView):
 
         data = list()
         nut = {
+            'price': [],
             'energy': [],
             'carbohydrates': [],
             'salt': [],
@@ -133,6 +122,7 @@ class UserMyPage(LoginRequiredMixin, generic.TemplateView):
         for d in date:
             if d.isoformat() in nutrient_shift.keys():
                 key = d.isoformat()
+                nut['price'].append(nutrient_shift[key].price)
                 nut['energy'].append(nutrient_shift[key].energy)
                 nut['carbohydrates'].append(nutrient_shift[key].carbohydrates)
                 nut['salt'].append(nutrient_shift[key].salt)
@@ -143,6 +133,7 @@ class UserMyPage(LoginRequiredMixin, generic.TemplateView):
                 nut['yellow'].append(nutrient_shift[key].yellow)
 
             else:
+                nut['price'].append(0)
                 nut['energy'].append(0)
                 nut['carbohydrates'].append(0)
                 nut['salt'].append(0)
