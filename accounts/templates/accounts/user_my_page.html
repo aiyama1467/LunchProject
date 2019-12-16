@@ -2,7 +2,9 @@
 
 {% block content %}
     <h2>会員情報</h2>
-
+    <h3>
+    <a href={% url 'accounts:addeatlog' %}>履歴追加</a>
+    </h3>
     {% if user.is_superuser %}
         <h3>
             メニューの管理
@@ -18,7 +20,10 @@
         <dl id="acMenu">
             {% for date, nutrient in nutrient_shift.items %}
                 <dt><span class="date">{{ date }}</span></dt>
-                <a href={% url 'accounts:modifyeatlog' date %}>編集</a>
+                <div>
+                    <a href={% url 'accounts:modifyeatlog' date %}>修正</a>
+                    <a href={% url 'accounts:deleatlog' date %}>削除</a>
+                </div>
                 <dd>
                     <fieldset>
                         <div>

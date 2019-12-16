@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load index%}
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    <h3>追加する日付</h3>
+    <input type="date" name="add_date" value={{date}}>
+    <h3>現在の献立</h3>
+    <div>
+        <table width="100%" id="menu_list_view">
+            {% for i in eatlog_list %}
+            <tr>
+                <th width="80%" align="left">
+                    {{i|get_menuname:i}}
+                    <input type="hidden" name="eat_log" value={{i}}>
+                </th>
+                <th width="20%">
+                    <button name="del" value={{i}}>削除</button>
+                </th>
+            </tr>
+            {% endfor %}
+        </table>
+        <button name="update" value="update">決定</button>
+    </div>
+    <h3>メニューリスト</h3>
+    <div>
+        {% for menu in menu_list %}
+        <div>
+            <table width="100%">
+                <tr>
+                    <th width="80%" align="left">
+                        {{menu.menu_name}}
+                    </th>
+                    <th width="20%">
+                        <button name="add" value={{menu.id}}>追加</button>
+                    </th>
+                </tr>
+            </table>
+        </div>
+        {% endfor %}
+
+    </div>
+</form>
+<a href="{% url 'accounts:my_page' %}">プロフィールに戻る</a>
+{% endblock %}
