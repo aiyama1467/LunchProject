@@ -5,7 +5,7 @@
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">確認</button>
+        <button class="btn-shine" type="submit">確認</button>
     </form>
 
     <a href="{% url 'accounts:my_page' %}">プロフィールに戻る</a>
