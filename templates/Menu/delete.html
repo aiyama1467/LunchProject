@@ -6,10 +6,11 @@
         <div class="col-12">
             <p>{{ object }} を削除していいですか?</p>
             <form method="post">
-                <button class="btn btn-danger">削除する</button>
+                <button class="btn-shine danger">削除する</button>
                 {% csrf_token %}
             </form>
-            <a href="{% url 'menu_proposal:edit' %}">戻る</a>
+            <br>
+            <a class="btn-shine" href="{% url 'menu_proposal:edit' %}">戻る</a>
         </div>
     </div>
 </div>

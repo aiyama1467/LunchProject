@@ -7,15 +7,16 @@
         <div class="col-12">
             <p>{{ date }}の献立を削除していいですか?</p>
             <form method="post">
-                <button class="btn btn-danger" name="delete" value={{date}}>削除する</button>
+                <button class="btn-shine danger" name="delete" value={{date}}>削除する</button>
+            <a class="btn-shine" href=" {% url 'accounts:my_page' %}">戻る</a>
                 {% csrf_token %}
             </form>
-            <a href="{% url 'accounts:my_page' %}">戻る</a>
         </div>
         <div>
             <h3>{{date}}の献立</h3>
             {% for i in eatlog_list %}
                 {{i|get_menuname:i}}
+                <br>
             {% endfor %}
         </div>
     </div>
