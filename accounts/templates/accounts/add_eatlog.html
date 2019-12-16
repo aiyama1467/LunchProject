@@ -16,12 +16,14 @@
                     <input type="hidden" name="eat_log" value={{i}}>
                 </th>
                 <th width="20%">
-                    <button name="del" value={{i}}>削除</button>
+                    <button class="btn-shine" name="del" value={{i}}>削除</button>
                 </th>
             </tr>
             {% endfor %}
         </table>
-        <button name="update" value="update">決定</button>
+        <div align="center">
+        <button class="btn-shine submit" name="update" value="update">決定</button>
+        </div>
     </div>
     <h3>メニューリスト</h3>
     <div>
@@ -33,7 +35,7 @@
                         {{menu.menu_name}}
                     </th>
                     <th width="20%">
-                        <button name="add" value={{menu.id}}>追加</button>
+                        <button class="btn-shine" name="add" value={{menu.id}}>追加</button>
                     </th>
                 </tr>
             </table>

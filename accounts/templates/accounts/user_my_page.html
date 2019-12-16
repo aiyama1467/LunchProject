@@ -2,9 +2,6 @@
 
 {% block content %}
     <h2>会員情報</h2>
-    <h3>
-    <a href={% url 'accounts:addeatlog' %}>履歴追加</a>
-    </h3>
     {% if user.is_superuser %}
         <h3>
             メニューの管理
@@ -16,6 +13,10 @@
     {% endif %}
 
     {% if not user.is_superuser %}
+        <h3>
+            <a href={% url 'accounts:addeatlog' %}>履歴追加</a>
+        </h3>
+
         <h3>食事履歴</h3>
         <dl id="acMenu">
             {% for date, nutrient in nutrient_shift.items %}
@@ -94,7 +95,6 @@
             color: #FFFFFF;
         }
         </style>
-    {% endif %}
 
     <section>
     <h3>栄養経過</h3>
@@ -102,6 +102,9 @@
         {{ graph|safe }}
     {% endif %}
     </section>
+
+    {% endif %}
+
 
     <section>
         <h3>ユーザ情報　<a href="{% url 'accounts:modify_user_info' %}">編集</a></h3>
@@ -130,9 +133,8 @@
     </section>
 
     <a href="{% url 'accounts:password_modify' %}">パスワード変更</a> <br>
-
     {% if not user.is_superuser %}
-        <button id="delete_user" class="btn btn-outline-danger" type="button">アカウント削除</button>
+        <button id="delete_user" class="btn-shine danger" type="button">アカウント削除</button>
         <script>
             let btn = document.getElementById('delete_user');
 

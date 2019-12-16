@@ -2,7 +2,7 @@
 
 {% block content %}
 <h2>メニューの修正削除</h2>
-<h1>検索条件</h1>
+<h3>検索条件</h3>
 <form method="post">
     {% csrf_token %}
     {% for field in test_form %}
@@ -15,9 +15,10 @@
     {% endfor %}
     <br>
     {% endfor %}
-    <input type="submit" id="button" name="button" value="検索">
+    <input class="btn-shine" type="submit" id="button" name="button" value="検索">
 </form>
-<h1>検索結果</h1>
+<br>
+<h3>検索結果</h3>
 {% for menu in menu_list %}
 <table width="100%">
     <tr>
@@ -25,10 +26,10 @@
             <a href={% url 'menu_proposal:detail' pk=menu.id %}>{{menu.menu_name}}</a>
         </th>
         <th width="10%">
-            <a class="btn btn-primary" href="{% url 'menu_proposal:update' menu.pk %}">修正</a>
+            <a href="{% url 'menu_proposal:update' menu.pk %}">修正</a>
         </th>
         <th width="10%">
-            <a class="btn btn-danger" href="{% url 'menu_proposal:delete' menu.pk %}">削除</a>
+            <a href="{% url 'menu_proposal:delete' menu.pk %}">削除</a>
         </th>
     </tr>
 </table>
