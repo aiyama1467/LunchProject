@@ -134,12 +134,11 @@ class MenuProposalView(FormView):
             # 一般ユーザーが利用したとき食事履歴を追加
             if self.request.user.is_authenticated and self.request.user.is_superuser == False:
                 if not EatLog.objects.filter(user=self.request.user, eat_datetime=date[i]).exists():
-                    continue
-                log = EatLog.objects.create(
-                    user=self.request.user, eat_datetime=date[i])
-                for menu in menu_list[0]:
-                    log.menu.add(menu)
-                log.save()
+                    log = EatLog.objects.create(
+                        user=self.request.user, eat_datetime=date[i])
+                    for menu in menu_list[0]:
+                        log.menu.add(menu)
+                    log.save()
         # 栄養素の単位のリスト
         unit = ["円", "kcal", "g", "g", "g", "g", "", "", ""]
         # 提案した献立の総栄養素
