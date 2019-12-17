@@ -122,7 +122,7 @@ class MenuProposalView(FormView):
                     user=self.request.user, eat_datetime=date[0])
                 for menu in menu_list[0]:
                     log.menu.add(menu)
-                messages.info(self.request, "食事履歴を追加しました")
+                messages.info(self.request, str(date[0])+"の食事履歴を追加しました")
                 log.save()
         for i in range(1, int(form.cleaned_data["time"])):
 
@@ -136,8 +136,9 @@ class MenuProposalView(FormView):
                 if not EatLog.objects.filter(user=self.request.user, eat_datetime=date[i]).exists():
                     log = EatLog.objects.create(
                         user=self.request.user, eat_datetime=date[i])
-                    for menu in menu_list[0]:
+                    for menu in menu_list[i]:
                         log.menu.add(menu)
+                    messages.info(self.request, str(date[i])+"の食事履歴を追加しました")
                     log.save()
         # 栄養素の単位のリスト
         unit = ["円", "kcal", "g", "g", "g", "g", "", "", ""]
