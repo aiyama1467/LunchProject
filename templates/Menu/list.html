@@ -32,11 +32,23 @@
 </form>
 <br>
 <h3>検索結果</h3>
-{% for menu in menu_list %}
-
-<a href={% url 'menu_proposal:detail' pk=menu.id %}>{{menu.menu_name}}</a>
-<br>
-{% endfor %}
+{% if menu_list %}
+<table border="3">
+    <tr>
+        <th width="80%">メニュー名</th>
+        <th width="20%">税込み価格</th>
+    </tr>
+    {% for menu in menu_list %}
+    <tr>
+        <td align="left" width="80%">
+            <a href={% url 'menu_proposal:detail' pk=menu.id %}>{{menu.menu_name}}</a>
+        </td>
+        <td align="right" width="20%">
+            {{menu.menu_value}}円
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 <!--ページ送り-->
 {% if page_obj.has_previous %}
 <a align="left" href="?page={{ page_obj.previous_page_number }}">前へ</a>
@@ -52,5 +64,8 @@
 
 {% if page_obj.has_next %}
 <a href="?page={{ page_obj.next_page_number }}">次へ</a>
+{% endif %}
+{% else %}
+<div>検索結果がありません</div>
 {% endif %}
 {% endblock content %}

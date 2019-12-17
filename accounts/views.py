@@ -71,6 +71,7 @@ class UserMyPage(LoginRequiredMixin, generic.TemplateView):
 
         def __add__(self, other):
             self.menu += other.menu
+            self.menu.sort()
             self.price += other.price
             self.energy += other.energy
             self.carbohydrates += other.carbohydrates

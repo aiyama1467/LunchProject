@@ -96,17 +96,7 @@ class MenuProposalView(FormView):
             fig = go.Figure(data=data, layout=layout)
             div = opy.plot(fig, auto_open=False, output_type='div')
             menu_graph_list.append(div)
-        data = [go.Bar(
-            x=list(reversed(list(sum.values()))),
-            y=list(reversed(list(sum.keys()))),
-            orientation='h'
-        )]
-        layout = go.Layout(title="栄養素",
-                           paper_bgcolor='rgba(0,0,0,0)',
-                           plot_bgcolor='rgba(0,0,0,0)',
-                           font=dict(color='rgba(255,255,255,1)'))
-        fig = go.Figure(data=data, layout=layout)
-        div = opy.plot(fig, auto_open=False, output_type='div')
+
         # 日付のリスト
         date = [timezone.datetime.today().date()]
         # 土曜日の時,一日目を月曜日に
@@ -164,7 +154,19 @@ class MenuProposalView(FormView):
                            plot_bgcolor='rgba(0,0,0,0)',
                            font=dict(color='rgba(255,255,255,1)'))
         fig = go.Figure(data=trace, layout=layout)
-        div2 = opy.plot(fig,  output_type='div')
+        div2 = opy.plot(fig, output_type='div')
+        data = [go.Bar(
+            x=list(reversed(list(result.values()))),
+            y=list(reversed(list(result.keys()))),
+            orientation='h'
+        )]
+        layout = go.Layout(title="栄養素",
+                           paper_bgcolor='rgba(0,0,0,0)',
+                           plot_bgcolor='rgba(0,0,0,0)',
+                           font=dict(color='rgba(255,255,255,1)'))
+        fig = go.Figure(data=data, layout=layout)
+        div = opy.plot(fig, auto_open=False, output_type='div')
+
         return render(self.request, 'Proposal/proposal_result.html', {"date": date, "form": form, "menu": menu_list, "sum": menu_sum_list, "time": range(int(form.cleaned_data["time"])), "total": result, "unit": unit, "graph_list": menu_graph_list, "div": div, "div2": div2, "time_int": int(form.cleaned_data["time"])})
 
     def form_invalid(self, form):

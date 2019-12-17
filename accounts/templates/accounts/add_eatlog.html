@@ -4,7 +4,8 @@
 
 <form method="POST">
     {% csrf_token %}
-    <h3>追加する日付</h3>
+    <h2>食事履歴の登録</h2>
+    <h3>登録する日付</h3>
     <input type="date" name="add_date" value={{date}}>
     <h3>現在の献立</h3>
     <div>

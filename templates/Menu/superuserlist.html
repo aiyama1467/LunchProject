@@ -19,22 +19,33 @@
 </form>
 <br>
 <h3>検索結果</h3>
-{% for menu in menu_list %}
-<table width="100%">
+{% if menu_list %}
+<table width="100%" border="3">
     <tr>
-        <th width="80%" align="left">
-            <a href={% url 'menu_proposal:detail' pk=menu.id %}>{{menu.menu_name}}</a>
-        </th>
-        <th width="10%">
-            <a href="{% url 'menu_proposal:update' menu.pk %}">修正</a>
-        </th>
-        <th width="10%">
-            <a href="{% url 'menu_proposal:delete' menu.pk %}">削除</a>
-        </th>
+        <th width="70%">メニュー名</th>
+        <th width="16%">税込み価格</th>
+        <th></th>
+        <th></th>
     </tr>
+
+    {% for menu in menu_list %}
+    <tr>
+        <td width="70%" align="left">
+            <a href={% url 'menu_proposal:detail' pk=menu.id %}>{{menu.menu_name}}</a>
+        </td>
+        <td width="16%" align="right">
+            {{menu.menu_value}}円
+        </td>
+        <td width="7%" align="center">
+            <a href="{% url 'menu_proposal:update' menu.pk %}">修正</a>
+        </td>
+        <td width="7%" align="center">
+            <a href="{% url 'menu_proposal:delete' menu.pk %}">削除</a>
+        </td>
+    </tr>
+    {% endfor %}
 </table>
-<br>
-{% endfor %}
+
 <!--ページ送り-->
 {% if page_obj.has_previous %}
 <a href="?page={{ page_obj.previous_page_number }}">前へ</a>
@@ -50,5 +61,8 @@
 
 {% if page_obj.has_next %}
 <a href="?page={{ page_obj.next_page_number }}">次へ</a>
+{% endif %}
+{% else %}
+<div>検索結果がありません</div>
 {% endif %}
 {% endblock content %}
